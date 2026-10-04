@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #020203;
+    --bg-surface: #0A0D0C;
+    --accent-neon: #02F74C;
+    --accent-sec: #1D5D33;
+    --accent-light: #19C84A;
+    --accent-muted: #76A988;
+    --text-main: #F3F3F4;
+    --text-muted: #B4B7B8;
+    --border-green: rgba(2, 247, 76, 0.35);
+    --glow-green: rgba(2, 247, 76, 0.20);
+  }
+
+  html, body {
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Space Mono', 'JetBrains Mono', monospace;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button, a {
+    touch-action: manipulation;
+  }
+
+  h1, h2, h3, h4, .font-code-header {
+    font-family: 'Space Mono', monospace;
+    letter-spacing: -0.02em;
+  }
+
+  .font-mono-code {
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+  }
+
+  .font-sans-body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Neon Green Code Elements */
+.code-border {
+  border: 1px solid rgba(2, 247, 76, 0.35);
+}
+
+.code-border-light {
+  border: 1px solid rgba(2, 247, 76, 0.2);
+}
+
+.code-border-hover {
+  transition: all 0.25s ease;
+}
+
+.code-border-hover:hover {
+  border-color: #02F74C;
+  box-shadow: 0 0 15px rgba(2, 247, 76, 0.25);
+}
+
+.glow-neon {
+  text-shadow: 0 0 10px rgba(2, 247, 76, 0.6);
+}
+
+.box-glow {
+  box-shadow: 0 0 20px rgba(2, 247, 76, 0.15);
+}
+
+.terminal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid rgba(2, 247, 76, 0.35);
+  background: rgba(10, 13, 12, 0.8);
+  color: #02F74C;
+  letter-spacing: 0.05em;
+}
+
+.terminal-tag {
+  color: #02F74C;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* Cyber Technical Background Grid */
+.dev-grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(2, 247, 76, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(2, 247, 76, 0.05) 1px, transparent 1px);
+  background-size: 3rem 3rem;
+}
+
+/* Smooth transitions */
+a, button {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 200ms;
+}
+
+/* Custom dark neon scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #020203;
+}
+::-webkit-scrollbar-thumb {
+  background: #1D5D33;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #02F74C;
+}

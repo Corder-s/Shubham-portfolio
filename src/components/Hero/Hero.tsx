@@ -1,0 +1,216 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { ArrowDownRight, Terminal, Code2, Sparkles, Download, Cpu } from 'lucide-react';
+import { Profile } from '../../types';
+import { InteractiveOrbitRing, CodeTag, CodeClosingTag, HeroConnectionCircuitFrame } from '../Decorative/DevGraphics';
+import { AppBrandIcon } from '../Social/AppBrandIcon';
+
+interface HeroProps {
+  profile: Profile;
+}
+
+export const Hero: React.FC<HeroProps> = ({ profile }) => {
+  return (
+    <section
+      id="home"
+      className="relative min-h-screen pt-28 pb-16 lg:pt-36 lg:pb-24 flex items-center border-b border-[#02F74C]/20 overflow-hidden bg-[#020203]"
+    >
+      {/* Subtle Grid Line Elements */}
+      <div className="absolute inset-0 pointer-events-none dev-grid-bg opacity-30" />
+
+      {/* Top Status & Code Label Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-4 mb-6 border-b border-[#02F74C]/15 font-mono text-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-[#02F74C] rounded-full animate-ping" />
+            <span className="w-2 h-2 bg-[#02F74C] rounded-full -ml-3" />
+            <span className="text-[#02F74C] font-semibold tracking-wider text-[11px] uppercase">
+              {profile.availability_status || 'AVAILABLE FOR OPPORTUNITIES'}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[#A6A9AA] text-[11px]">
+            <span className="text-[#02F74C]/70">v2.6.0</span>
+            <span>•</span>
+            <span className="text-[#76A988]">LAT 28.4744° N, LNG 77.5040° E</span>
+            <span>•</span>
+            <span>GREATER NOIDA, IN</span>
+          </div>
+        </div>
+
+        {/* Hero Code Intro Tag */}
+        <div className="font-mono text-xs text-[#76A988] mb-4 select-none">
+          <CodeTag tag="main" /> <CodeTag tag="hero" />
+        </div>
+
+        {/* Hero Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+          {/* Left Column: Futuristic Massive Developer Typography (7 cols) */}
+          <div className="lg:col-span-7 flex flex-col justify-center">
+            {/* Developer Prompt Snippet */}
+            <motion.div
+              initial={{ opacity: 0, x: -15 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-3 py-1 bg-[#0A0D0C] border border-[#02F74C]/30 text-[#02F74C] text-xs font-mono mb-4 w-fit"
+            >
+              <Terminal className="w-3.5 h-3.5 text-[#02F74C]" />
+              <span>const developer = &quot;Shubham Saini&quot;;</span>
+            </motion.div>
+
+            {/* Giant Heading Framed by Connection Circuit Lines */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <HeroConnectionCircuitFrame>
+                <div className="font-mono text-xs sm:text-sm text-[#A6A9AA] mb-1">
+                  Hi, I&apos;m
+                </div>
+                <h1 className="font-code-header text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-[#F3F3F4] tracking-tight leading-[0.95] uppercase break-words">
+                  SHUBHAM <br />
+                  <span className="text-[#02F74C] glow-neon">SAINI</span>
+                </h1>
+                <div className="font-mono text-[11px] sm:text-xs text-[#76A988]/80 select-none mt-1.5 pl-0.5">
+                  &lt;/h1&gt;
+                </div>
+
+                {/* Sub-headline with <p> and </p> tags as in reference */}
+                <div className="mt-4 space-y-2">
+                  <div className="font-mono text-sm sm:text-base md:text-lg flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[#76A988] select-none">&lt;p&gt;</span>
+                    <span className="text-[#02F74C] font-semibold glow-neon">
+                      Entrepreneur and developer
+                    </span>
+                    <span className="text-[#76A988] select-none">&lt;/p&gt;</span>
+                  </div>
+                  <h2 className="font-mono text-xs sm:text-sm text-[#A6A9AA]">
+                    B.Tech CSE Student &amp; Aspiring Full-Stack Developer
+                  </h2>
+                  <p className="font-mono text-xs sm:text-sm text-[#76A988] max-w-lg leading-relaxed pt-1">
+                    {profile.short_bio ||
+                      'Focused on responsive interfaces, scalable backends, practical algorithms, and data-driven systems.'}
+                  </p>
+                </div>
+              </HeroConnectionCircuitFrame>
+            </motion.div>
+
+            {/* Actions */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center font-mono"
+            >
+              <a
+                href="#projects"
+                className="w-full sm:w-auto justify-center px-6 py-3 border border-[#02F74C] bg-[#02F74C] text-[#020203] text-xs sm:text-sm font-bold tracking-wider uppercase transition-all shadow-[0_0_15px_rgba(2,247,76,0.35)] hover:shadow-[0_0_25px_rgba(2,247,76,0.6)] hover:scale-[1.02] flex items-center gap-2 text-center"
+              >
+                <span>[ EXPLORE WORK ]</span>
+                <ArrowDownRight className="w-4 h-4" />
+              </a>
+
+              <a
+                href={profile.resume_url || '/resume.pdf'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto justify-center px-6 py-3 border border-[#02F74C]/50 hover:border-[#02F74C] bg-[#0A0D0C] text-[#02F74C] text-xs sm:text-sm font-bold tracking-wider uppercase transition-all hover:bg-[#02F74C]/10 flex items-center gap-2 text-center"
+              >
+                <Download className="w-4 h-4" />
+                <span>[ DOWNLOAD CV ]</span>
+              </a>
+            </motion.div>
+
+            {/* Quick App Access Strip with Official App Badges */}
+            <div className="mt-6 flex flex-wrap items-center gap-2 font-mono">
+              <span className="text-[11px] text-[#76A988] font-bold mr-1">
+                // CONNECT_APPS:
+              </span>
+              <a
+                href="https://www.linkedin.com/in/shubham-saini-33537a374/"
+                target="_blank"
+                rel="noreferrer"
+                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#0A66C2] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(10,102,194,0.4)]"
+                title="Connect on LinkedIn"
+              >
+                <AppBrandIcon platform="linkedin" size="xs" variant="app-tile" />
+                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">LinkedIn</span>
+              </a>
+              <a
+                href="https://github.com/Corder-s"
+                target="_blank"
+                rel="noreferrer"
+                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#02F74C] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(2,247,76,0.3)]"
+                title="Browse GitHub Repos"
+              >
+                <AppBrandIcon platform="github" size="xs" variant="app-tile" />
+                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">GitHub</span>
+              </a>
+              <a
+                href="https://wa.me/919876543210"
+                target="_blank"
+                rel="noreferrer"
+                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#25D366] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(37,211,102,0.4)]"
+                title="Message on WhatsApp"
+              >
+                <AppBrandIcon platform="whatsapp" size="xs" variant="app-tile" />
+                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">WhatsApp</span>
+              </a>
+              <a
+                href="https://instagram.com/shubham.saini"
+                target="_blank"
+                rel="noreferrer"
+                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#E1306C] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(225,48,108,0.4)]"
+                title="Follow on Instagram"
+              >
+                <AppBrandIcon platform="instagram" size="xs" variant="app-tile" />
+                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">Instagram</span>
+              </a>
+              <a
+                href="mailto:damnitzshuham1406@gmail.com"
+                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#EA4335] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(234,67,53,0.3)]"
+                title="Send Direct Email"
+              >
+                <AppBrandIcon platform="email" size="xs" variant="app-tile" />
+                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">Email</span>
+              </a>
+            </div>
+
+            {/* Terminal Status Ticker */}
+            <div className="mt-8 sm:mt-10 pt-4 border-t border-[#02F74C]/15 grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-3 sm:gap-6 font-mono text-[11px] text-[#A6A9AA]">
+              <div className="flex items-center gap-2">
+                <span className="text-[#02F74C]">&gt;</span>
+                <span>SYS: <strong className="text-[#02F74C]">ONLINE (200 OK)</strong></span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#02F74C]">&gt;</span>
+                <span>STACK: <strong className="text-[#F3F3F4]">REACT / NODE / JAVA</strong></span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#02F74C]">&gt;</span>
+                <span>PORT: <strong className="text-[#F3F3F4]">5173</strong></span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#02F74C]">&gt;</span>
+                <span>MODE: <strong className="text-[#02F74C]">ENGINEERING</strong></span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Interactive Orbit Ring with Center LinkedIn Avatar (5 cols) */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center relative w-full">
+            <InteractiveOrbitRing
+              profileUrl="https://www.linkedin.com/in/shubham-saini-33537a374/"
+              name={profile.name || 'Shubham Saini'}
+            />
+          </div>
+        </div>
+
+        {/* Hero Closing Code Tag */}
+        <div className="font-mono text-xs text-[#76A988] mt-6 select-none">
+          <CodeClosingTag tag="hero" />
+        </div>
+      </div>
+    </section>
+  );
+};
