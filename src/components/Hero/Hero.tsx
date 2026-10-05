@@ -68,7 +68,7 @@ export const Hero: React.FC<HeroProps> = ({ profile }) => {
                   Hi, I&apos;m
                 </div>
                 <h1 className="font-code-header text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-[#F3F3F4] tracking-tight leading-[0.95] uppercase break-words">
-                  SHUBHAM <br />
+                  <span className="text-[#EF4444]">S</span>HUBHAM <br />
                   <span className="text-[#02F74C] glow-neon">SAINI</span>
                 </h1>
                 <div className="font-mono text-[11px] sm:text-xs text-[#76A988]/80 select-none mt-1.5 pl-0.5">
