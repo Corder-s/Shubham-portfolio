@@ -1,14 +1,15 @@
 import React from 'react';
 import { ArrowUp } from 'lucide-react';
-import { SocialLink } from '../../types';
-import { CodeTag, CodeClosingTag } from '../Decorative/DevGraphics';
+import { SocialLink, Profile } from '../../types';
 import { AppBrandIcon } from '../Social/AppBrandIcon';
+import { formatSocialUrl } from '../../utils/urlHelper';
 
 interface FooterProps {
   socialLinks: SocialLink[];
+  profile?: Profile;
 }
 
-export const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
+export const Footer: React.FC<FooterProps> = ({ socialLinks, profile }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -20,6 +21,74 @@ export const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
     { label: '/04 EXPERIENCE', href: '#experience' },
     { label: '/05 CONTACT', href: '#contact' },
   ];
+
+  // Dynamically resolve all 6 external endpoints from live Supabase profile and socialLinks
+  const orderedPlatforms: Array<'github' | 'linkedin' | 'email' | 'whatsapp' | 'instagram' | 'phone'> = [
+    'github',
+    'linkedin',
+    'email',
+    'whatsapp',
+    'instagram',
+    'phone',
+  ];
+
+  const standardEndpoints = orderedPlatforms.map((platform) => {
+    const link = socialLinks.find((s) => s.platform.toLowerCase() === platform);
+    let targetUrl = link?.url || '';
+    let label = link?.label || (platform === 'whatsapp' ? 'WhatsApp' : platform.charAt(0).toUpperCase() + platform.slice(1));
+    const isActive = link !== undefined ? link.is_active : true;
+
+    if (platform === 'github') {
+      label = link?.label || 'GitHub';
+      targetUrl = link?.url || 'https://github.com/Corder-s';
+    } else if (platform === 'linkedin') {
+      label = link?.label || 'LinkedIn';
+      targetUrl = link?.url || 'https://www.linkedin.com/in/shubham-saini-33537a374/';
+    } else if (platform === 'email') {
+      label = link?.label || 'Email';
+      targetUrl = profile?.email || link?.url || 'damnitzshuham1406@gmail.com';
+    } else if (platform === 'whatsapp') {
+      label = link?.label || 'WhatsApp';
+      if (link?.url && !link.url.includes('8958364005')) {
+        targetUrl = link.url;
+      } else if (profile?.phone) {
+        targetUrl = profile.phone;
+      } else {
+        targetUrl = link?.url || '+91 7983873223';
+      }
+    } else if (platform === 'instagram') {
+      label = link?.label || 'Instagram';
+      if (link?.url && !link.url.includes('damn.itz_shubham')) {
+        targetUrl = link.url;
+      } else {
+        targetUrl = 'https://instagram.com/shubham.saini';
+      }
+    } else if (platform === 'phone') {
+      label = link?.label || 'Phone';
+      targetUrl = profile?.phone || link?.url || '+91 7983873223';
+    }
+
+    return {
+      id: link?.id || `ext-${platform}`,
+      platform,
+      label,
+      url: formatSocialUrl(platform, targetUrl),
+      is_active: isActive,
+    };
+  });
+
+  // Include any extra custom platforms configured in Admin
+  const extraEndpoints = socialLinks
+    .filter((l) => !orderedPlatforms.includes(l.platform.toLowerCase() as any) && l.is_active)
+    .map((l) => ({
+      id: l.id,
+      platform: l.platform,
+      label: l.label,
+      url: formatSocialUrl(l.platform, l.url),
+      is_active: true,
+    }));
+
+  const displayEndpoints = [...standardEndpoints, ...extraEndpoints];
 
   return (
     <footer className="bg-[#020203] text-[#F3F3F4] pt-16 pb-12 border-t border-[#02F74C]/20 font-mono">
@@ -75,25 +144,28 @@ export const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
           <div>
             <span className="text-[#02F74C] block uppercase font-bold mb-3">&gt; EXTERNAL_ENDPOINTS:</span>
             <div className="space-y-2.5 text-[#A6A9AA]">
-              {socialLinks
+              {displayEndpoints
                 .filter((l) => l.is_active)
-                .map((link) => (
-                  <a
-                    key={link.id}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2.5 py-1 text-slate-300 hover:text-white transition-colors group"
-                  >
-                    <div className="shrink-0 group-hover:scale-110 transition-transform">
-                      <AppBrandIcon platform={link.platform} size="xs" variant="app-tile" />
-                    </div>
-                    <span className="font-semibold text-xs tracking-wider group-hover:text-white transition-colors">
-                      {link.label}
-                    </span>
-                    <span className="text-[10px] text-[#02F74C] opacity-0 group-hover:opacity-100 transition-opacity">&gt;&gt;</span>
-                  </a>
-                ))}
+                .map((link) => {
+                  const isSelf = link.platform === 'email' || link.platform === 'phone';
+                  return (
+                    <a
+                      key={link.id}
+                      href={link.url}
+                      target={isSelf ? '_self' : '_blank'}
+                      rel={isSelf ? undefined : 'noopener noreferrer'}
+                      className="flex items-center gap-2.5 py-1 text-slate-300 hover:text-white transition-colors group"
+                    >
+                      <div className="shrink-0 group-hover:scale-110 transition-transform">
+                        <AppBrandIcon platform={link.platform} size="xs" variant="app-tile" />
+                      </div>
+                      <span className="font-semibold text-xs tracking-wider group-hover:text-white transition-colors">
+                        {link.label}
+                      </span>
+                      <span className="text-[10px] text-[#02F74C] opacity-0 group-hover:opacity-100 transition-opacity">&gt;&gt;</span>
+                    </a>
+                  );
+                })}
             </div>
           </div>
 

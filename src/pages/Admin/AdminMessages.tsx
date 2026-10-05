@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Mail,
   Search,
-  CheckCircle,
   Archive,
   ArchiveRestore,
   Trash2,
-  Clock,
   Send,
-  MessageSquare,
-  AlertCircle,
   ExternalLink,
   Copy,
   Check,
@@ -41,7 +37,7 @@ export const AdminMessages: React.FC = () => {
     }, 3500);
   };
 
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     const list = await contactService.getMessages();
     setMessages(list);
     // If a message was selected, refresh its data in view
@@ -49,11 +45,11 @@ export const AdminMessages: React.FC = () => {
       const updated = list.find((m) => m.id === selectedMessage.id);
       if (updated) setSelectedMessage(updated);
     }
-  };
+  }, [selectedMessage]);
 
   useEffect(() => {
     loadMessages();
-  }, []);
+  }, [loadMessages]);
 
   const updateStatus = async (id: string, status: ContactMessage['status'], toastText?: string) => {
     try {

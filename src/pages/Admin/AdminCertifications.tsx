@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Award, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, X, ExternalLink } from 'lucide-react';
 import { certificationService } from '../../services/certificationService';
 import { Certification } from '../../types';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';

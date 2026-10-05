@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, X, Cpu } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, X } from 'lucide-react';
 import { skillService } from '../../services/skillService';
 import { Skill } from '../../types';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';

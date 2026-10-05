@@ -61,21 +61,55 @@ export const socialService = {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data, error } = await supabase
-          .from('social_links')
-          .update(updates)
-          .eq('id', id)
-          .select()
-          .single();
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        const targetPlatform = updates.platform;
 
-        if (!error && data) {
-          cloudUpdated = data as SocialLink;
-        } else if (error) {
-          console.error('Supabase updateSocialLink error:', error);
-          if (error.code === '42501' || error.message?.includes('policy')) {
-            console.warn(
-              '[Supabase RLS Warning] Please run supabase/fix_rls.sql in Supabase SQL editor to allow updates.'
-            );
+        if (isUuid) {
+          const { data, error } = await supabase
+            .from('social_links')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
+
+          if (!error && data) {
+            cloudUpdated = data as SocialLink;
+          }
+        } else if (targetPlatform) {
+          // Check if row already exists for this platform in Supabase
+          const { data: existingRows } = await supabase
+            .from('social_links')
+            .select('*')
+            .eq('platform', targetPlatform)
+            .limit(1);
+
+          if (existingRows && existingRows.length > 0) {
+            const { data, error } = await supabase
+              .from('social_links')
+              .update(updates)
+              .eq('id', existingRows[0].id)
+              .select()
+              .single();
+
+            if (!error && data) {
+              cloudUpdated = data as SocialLink;
+            }
+          } else if (updates.url) {
+            const { data, error } = await supabase
+              .from('social_links')
+              .insert({
+                platform: targetPlatform,
+                label: updates.label || targetPlatform.charAt(0).toUpperCase() + targetPlatform.slice(1),
+                url: updates.url,
+                is_active: updates.is_active !== undefined ? updates.is_active : true,
+                display_order: updates.display_order || 1,
+              })
+              .select()
+              .single();
+
+            if (!error && data) {
+              cloudUpdated = data as SocialLink;
+            }
           }
         }
       } catch (err) {

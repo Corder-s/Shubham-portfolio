@@ -1,5 +1,4 @@
 import React from 'react';
-import { Trophy, CheckCircle, Terminal, Award } from 'lucide-react';
 import { Achievement } from '../../types';
 import { CodeTag, CodeClosingTag } from '../Decorative/DevGraphics';
 

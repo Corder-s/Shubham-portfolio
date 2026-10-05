@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Layers } from 'lucide-react';
+import { Plus, Edit, Trash2, X } from 'lucide-react';
 import { serviceService } from '../../services/serviceService';
 import { Service } from '../../types';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';

@@ -16,6 +16,7 @@ import { SocialLink } from '../../types';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 import { useModalKeyboard } from '../../hooks/useModalKeyboard';
 import { AppBrandIcon } from '../../components/Social/AppBrandIcon';
+import { formatSocialUrl } from '../../utils/urlHelper';
 
 export const AdminSocialLinks: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'channels' | 'feed'>('channels');
@@ -94,10 +95,16 @@ export const AdminSocialLinks: React.FC = () => {
 
     setSaving(true);
     try {
+      const sanitizedUrl = formatSocialUrl(formData.platform || 'other', formData.url);
+      const payload = {
+        ...formData,
+        url: sanitizedUrl,
+      };
+
       if (editing) {
-        await socialService.updateSocialLink(editing.id, formData);
+        await socialService.updateSocialLink(editing.id, payload);
       } else {
-        await socialService.createSocialLink(formData as Omit<SocialLink, 'id'>);
+        await socialService.createSocialLink(payload as Omit<SocialLink, 'id'>);
       }
       setIsModalOpen(false);
       loadChannels();
@@ -504,9 +511,27 @@ export const AdminSocialLinks: React.FC = () => {
                   required
                   value={formData.url || ''}
                   onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                  placeholder="https://... or mailto:... or tel:..."
+                  placeholder={
+                    formData.platform === 'instagram'
+                      ? 'https://instagram.com/your_username or @your_username'
+                      : formData.platform === 'whatsapp'
+                      ? 'https://wa.me/91... or phone number'
+                      : formData.platform === 'phone'
+                      ? '+91 9876543210 or tel:+91...'
+                      : formData.platform === 'email'
+                      ? 'your.email@example.com or mailto:...'
+                      : 'https://...'
+                  }
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
+                {formData.url && (
+                  <p className="text-[11px] text-emerald-400 font-mono mt-1 flex items-center gap-1 truncate">
+                    <span className="text-slate-500">Will link to:</span>
+                    <span className="font-semibold">
+                      {formatSocialUrl(formData.platform || 'other', formData.url)}
+                    </span>
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center gap-2 pt-2">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppBrandIcon, AppPlatform } from './AppBrandIcon';
 import { ExternalLink, ArrowUpRight } from 'lucide-react';
+import { formatSocialUrl } from '../../utils/urlHelper';
 
 interface AppBrandTileProps {
   platform: AppPlatform;
@@ -95,16 +96,17 @@ export const AppBrandTile: React.FC<AppBrandTileProps> = ({
     tagText: 'LINK',
   };
 
-  const isEmail = norm === 'email' || norm === 'gmail';
+  const isSelf = norm === 'email' || norm === 'gmail' || norm === 'phone' || norm === 'tel';
+  const resolvedUrl = formatSocialUrl(platform, url);
 
   // CIRCLE LAYOUT (For prominent interactive circular hub in Contact section)
   if (layout === 'circle') {
     return (
       <a
-        href={url}
+        href={resolvedUrl}
         onClick={onClick}
-        target={isEmail ? '_self' : '_blank'}
-        rel="noopener noreferrer"
+        target={isSelf ? '_self' : '_blank'}
+        rel={isSelf ? undefined : 'noopener noreferrer'}
         className={`group relative flex flex-col items-center gap-2.5 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer ${className}`}
       >
         {/* Glow ambient background aura on hover */}
@@ -143,10 +145,10 @@ export const AppBrandTile: React.FC<AppBrandTileProps> = ({
   if (layout === 'card') {
     return (
       <a
-        href={url}
+        href={resolvedUrl}
         onClick={onClick}
-        target={isEmail ? '_self' : '_blank'}
-        rel="noopener noreferrer"
+        target={isSelf ? '_self' : '_blank'}
+        rel={isSelf ? undefined : 'noopener noreferrer'}
         className={`group relative p-4 rounded-xl bg-[#0A0D0C]/80 border border-white/10 ${theme.borderHover} ${theme.glowHover} transition-all duration-300 hover:-translate-y-1 flex items-center gap-4 cursor-pointer backdrop-blur-sm ${className}`}
       >
         <div className="shrink-0">
@@ -186,10 +188,10 @@ export const AppBrandTile: React.FC<AppBrandTileProps> = ({
   // PILL / BADGE LAYOUT (Compact floating ribbon or hero toolbar)
   return (
     <a
-      href={url}
+      href={resolvedUrl}
       onClick={onClick}
-      target={isEmail ? '_self' : '_blank'}
-      rel="noopener noreferrer"
+      target={isSelf ? '_self' : '_blank'}
+      rel={isSelf ? undefined : 'noopener noreferrer'}
       className={`group inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-[#0A0D0C]/90 border border-white/10 ${theme.borderHover} ${theme.glowHover} transition-all duration-200 hover:scale-105 cursor-pointer backdrop-blur-md ${className}`}
     >
       <AppBrandIcon platform={platform} size="xs" variant="app-tile" />

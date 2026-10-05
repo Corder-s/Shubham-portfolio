@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, ArrowRight, ArrowLeft, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ExternalLink, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Project } from '../../types';
 import { GithubIcon } from '../Decorative/Scribbles';

@@ -9,9 +9,7 @@ import {
   Award,
   Plus,
   ArrowRight,
-  Sparkles,
   ExternalLink,
-  Clock,
 } from 'lucide-react';
 import { projectService } from '../../services/projectService';
 import { skillService } from '../../services/skillService';

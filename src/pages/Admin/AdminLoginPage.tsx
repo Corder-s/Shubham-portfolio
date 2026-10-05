@@ -30,7 +30,21 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ initialMode }) =
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    const rawHash = window.location.hash ? window.location.hash.replace(/^#/, '') : '';
+    const hashParams = new URLSearchParams(rawHash);
+    const searchParams = new URLSearchParams(window.location.search);
+    const errorDesc = hashParams.get('error_description') || searchParams.get('error_description');
+    const errorCode = hashParams.get('error_code') || searchParams.get('error_code');
+    if (errorDesc) {
+      return decodeURIComponent(errorDesc.replace(/\+/g, ' '));
+    }
+    if (errorCode) {
+      return `Auth notification: ${errorCode}`;
+    }
+    return '';
+  });
   const [successMsg, setSuccessMsg] = useState(() => {
     if (typeof window !== 'undefined' && window.location.pathname.includes('reset-password')) {
       return 'Recovery session active. Enter your new password below.';
@@ -42,21 +56,10 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ initialMode }) =
 
   // Listen for Supabase recovery token when user clicks the reset link in their email
   useEffect(() => {
-    // 1. Check URL parameters and hash for any error returned by Supabase (e.g. expired link)
+    // 1. Check for recovery mode in hash, query or pathname
     const rawHash = window.location.hash ? window.location.hash.replace(/^#/, '') : '';
     const hashParams = new URLSearchParams(rawHash);
     const searchParams = new URLSearchParams(window.location.search);
-
-    const errorDesc = hashParams.get('error_description') || searchParams.get('error_description');
-    const errorCode = hashParams.get('error_code') || searchParams.get('error_code');
-
-    if (errorDesc) {
-      setError(decodeURIComponent(errorDesc.replace(/\+/g, ' ')));
-    } else if (errorCode) {
-      setError(`Auth notification: ${errorCode}`);
-    }
-
-    // 2. Check for recovery mode in hash, query or pathname
     const type = hashParams.get('type') || searchParams.get('type');
     if (
       type === 'recovery' ||

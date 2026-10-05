@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  User,
   Save,
   Upload,
   CheckCircle2,
@@ -15,11 +14,16 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { profileService } from '../../services/profileService';
+import { socialService } from '../../services/socialService';
 import { storageService } from '../../services/storageService';
 import { Profile } from '../../types';
+import { AppBrandIcon } from '../../components/Social/AppBrandIcon';
+import { formatSocialUrl } from '../../utils/urlHelper';
 
 export const AdminProfile: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [instagram, setInstagram] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -28,6 +32,10 @@ export const AdminProfile: React.FC = () => {
 
   useEffect(() => {
     profileService.getProfile().then(setProfile);
+    socialService.getSocialLinks().then((links) => {
+      setInstagram(links.find((s) => s.platform === 'instagram')?.url || '');
+      setWhatsapp(links.find((s) => s.platform === 'whatsapp')?.url || '');
+    });
   }, []);
 
   if (!profile) {
@@ -42,7 +50,41 @@ export const AdminProfile: React.FC = () => {
     try {
       const updated = await profileService.updateProfile(profile);
       setProfile(updated);
-      setStatusMsg({ type: 'success', text: 'Profile changes saved and synchronized.' });
+
+      // Persist Instagram and WhatsApp directly to socialService
+      const currentLinks = await socialService.getSocialLinks();
+      if (instagram.trim() !== '') {
+        const formatted = formatSocialUrl('instagram', instagram);
+        const existing = currentLinks.find((s) => s.platform === 'instagram');
+        if (existing) {
+          await socialService.updateSocialLink(existing.id, { url: formatted });
+        } else {
+          await socialService.createSocialLink({
+            platform: 'instagram',
+            label: 'Instagram',
+            url: formatted,
+            is_active: true,
+            display_order: currentLinks.length + 1,
+          });
+        }
+      }
+      if (whatsapp.trim() !== '') {
+        const formatted = formatSocialUrl('whatsapp', whatsapp);
+        const existing = currentLinks.find((s) => s.platform === 'whatsapp');
+        if (existing) {
+          await socialService.updateSocialLink(existing.id, { url: formatted });
+        } else {
+          await socialService.createSocialLink({
+            platform: 'whatsapp',
+            label: 'WhatsApp',
+            url: formatted,
+            is_active: true,
+            display_order: currentLinks.length + 2,
+          });
+        }
+      }
+
+      setStatusMsg({ type: 'success', text: 'Profile changes and social channels saved & synchronized!' });
       // Collapse back into summarized mode
       setIsEditing(false);
     } catch (err: any) {
@@ -195,6 +237,28 @@ export const AdminProfile: React.FC = () => {
                       <MapPin className="w-3.5 h-3.5 text-slate-400" />
                       <span>{profile.location}</span>
                     </div>
+                  )}
+                  {instagram && (
+                    <a
+                      href={formatSocialUrl('instagram', instagram)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-pink-400 hover:underline"
+                    >
+                      <AppBrandIcon platform="instagram" size="xs" variant="app-tile" />
+                      <span>{instagram}</span>
+                    </a>
+                  )}
+                  {whatsapp && (
+                    <a
+                      href={formatSocialUrl('whatsapp', whatsapp)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-emerald-400 hover:underline"
+                    >
+                      <AppBrandIcon platform="whatsapp" size="xs" variant="app-tile" />
+                      <span>{whatsapp}</span>
+                    </a>
                   )}
                 </div>
               </div>
@@ -355,9 +419,14 @@ export const AdminProfile: React.FC = () => {
 
           {/* Contact Coordinates */}
           <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-6 shadow-lg space-y-5">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider border-b border-slate-700 pb-3">
-              Contact Parameters
-            </h3>
+            <div className="flex items-center justify-between border-b border-slate-700 pb-3">
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                Contact &amp; Public Social Coordinates
+              </h3>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2 py-0.5 rounded">
+                SYNCHRONIZED
+              </span>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
@@ -377,6 +446,7 @@ export const AdminProfile: React.FC = () => {
                   type="text"
                   value={profile.phone}
                   onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                  placeholder="+91 7983873223"
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
@@ -389,6 +459,44 @@ export const AdminProfile: React.FC = () => {
                   onChange={(e) => setProfile({ ...profile, location: e.target.value })}
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                  <AppBrandIcon platform="instagram" size="xs" variant="app-tile" />
+                  <span>Instagram Profile / Handle</span>
+                </label>
+                <input
+                  type="text"
+                  value={instagram}
+                  onChange={(e) => setInstagram(e.target.value)}
+                  placeholder="@yourusername or https://instagram.com/..."
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+                />
+                {instagram && (
+                  <p className="text-[10px] text-emerald-400 font-mono mt-1 truncate">
+                    Target: {formatSocialUrl('instagram', instagram)}
+                  </p>
+                )}
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                  <AppBrandIcon platform="whatsapp" size="xs" variant="app-tile" />
+                  <span>WhatsApp Number / Link</span>
+                </label>
+                <input
+                  type="text"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  placeholder="+91 7983873223 or https://wa.me/..."
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+                />
+                {whatsapp && (
+                  <p className="text-[10px] text-emerald-400 font-mono mt-1 truncate">
+                    Target: {formatSocialUrl('whatsapp', whatsapp)}
+                  </p>
+                )}
               </div>
             </div>
           </div>

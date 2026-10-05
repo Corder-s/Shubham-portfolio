@@ -60,38 +60,59 @@ export const HomePage: React.FC = () => {
   const [services, setServices] = useState<Service[]>(initialServices);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>(initialSocialLinks);
   const [settings, setSettings] = useState<SiteSettings>(initialSiteSettings);
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
+    let lastFetched = 0;
     // Synchronously fetch all dynamic portfolio entities
-    Promise.all([
-      profileService.getProfile(),
-      projectService.getProjects(),
-      skillService.getSkills(),
-      educationService.getEducation(),
-      achievementService.getAchievements(),
-      experienceService.getExperience(),
-      serviceService.getServices(),
-      socialService.getSocialLinks(),
-      settingsService.getSettings(),
-    ])
-      .then(([prof, projs, skls, edu, achs, exp, srvs, socs, sets]) => {
-        if (prof) setProfile(prof);
-        if (projs && projs.length > 0) setProjects(projs);
-        if (skls && skls.length > 0) setSkills(skls);
-        if (edu && edu.length > 0) setEducation(edu);
-        if (achs && achs.length > 0) setAchievements(achs);
-        if (exp && exp.length > 0) setExperience(exp);
-        if (srvs && srvs.length > 0) setServices(srvs);
-        if (socs && socs.length > 0) setSocialLinks(socs);
-        if (sets) setSettings(sets);
-      })
-      .catch((err) => {
-        console.warn('Error loading dynamic database records, using defaults:', err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    const loadAll = (force = false) => {
+      const now = Date.now();
+      // Avoid excessive refetching on casual window clicks/alt-tabs if updated recently
+      if (!force && now - lastFetched < 30000) {
+        return;
+      }
+      lastFetched = now;
+
+      Promise.all([
+        profileService.getProfile(),
+        projectService.getProjects(),
+        skillService.getSkills(),
+        educationService.getEducation(),
+        achievementService.getAchievements(),
+        experienceService.getExperience(),
+        serviceService.getServices(),
+        socialService.getSocialLinks(),
+        settingsService.getSettings(),
+      ])
+        .then(([prof, projs, skls, edu, achs, exp, srvs, socs, sets]) => {
+          if (prof) setProfile(prof);
+          if (projs && projs.length > 0) setProjects(projs);
+          if (skls && skls.length > 0) setSkills(skls);
+          if (edu && edu.length > 0) setEducation(edu);
+          if (achs && achs.length > 0) setAchievements(achs);
+          if (exp && exp.length > 0) setExperience(exp);
+          if (srvs && srvs.length > 0) setServices(srvs);
+          if (socs && socs.length > 0) setSocialLinks(socs);
+          if (sets) setSettings(sets);
+        })
+        .catch((err) => {
+          console.warn('Error loading dynamic database records, using defaults:', err);
+        });
+    };
+
+    loadAll(true);
+
+    const onFocus = () => loadAll(false);
+    const onDataUpdated = () => loadAll(true);
+
+    // Auto-refresh when user switches back to this tab or edits in admin panel
+    window.addEventListener('focus', onFocus);
+    window.addEventListener('storage', onDataUpdated);
+    window.addEventListener('portfolio_data_updated', onDataUpdated);
+
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('storage', onDataUpdated);
+      window.removeEventListener('portfolio_data_updated', onDataUpdated);
+    };
   }, []);
 
   // Update dynamic page title based on settings
@@ -111,7 +132,7 @@ export const HomePage: React.FC = () => {
 
       {/* Main Content Sections */}
       <main className="relative z-10">
-        <Hero profile={profile} />
+        <Hero profile={profile} socialLinks={socialLinks} />
         <About profile={profile} />
         <EducationSection education={education} />
         <Achievements achievements={achievements} />
@@ -134,7 +155,7 @@ export const HomePage: React.FC = () => {
       <AIAgentChat settings={settings} />
 
       {/* Code Footer */}
-      <Footer socialLinks={socialLinks} />
+      <Footer profile={profile} socialLinks={socialLinks} />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { localStore } from './localStore';
 import { Profile } from '../types';
+import { formatSocialUrl } from '../utils/urlHelper';
 
 export const profileService = {
   async getProfile(): Promise<Profile> {
@@ -48,6 +49,34 @@ export const profileService = {
     const current = localStore.getProfile();
     const updated = cloudUpdated || { ...current, ...profile };
     localStore.setProfile(updated);
+
+    // Sync phone & WhatsApp channels if phone was updated
+    if (profile.phone && profile.phone.trim()) {
+      try {
+        const links = localStore.getSocialLinks();
+        let changed = false;
+        const cleanPhone = profile.phone.replace(/[^0-9]/g, '');
+
+        links.forEach((l) => {
+          if (l.platform === 'phone' && (l.url.includes('8958364005') || !l.url)) {
+            l.url = formatSocialUrl('phone', profile.phone!);
+            changed = true;
+          }
+          if (l.platform === 'whatsapp' && (l.url.includes('8958364005') || !l.url)) {
+            l.url = `https://wa.me/${cleanPhone}`;
+            changed = true;
+          }
+        });
+
+        if (changed) {
+          localStore.setSocialLinks(links);
+        }
+      } catch (e) {
+        console.warn('Failed to sync phone/whatsapp in localStore:', e);
+      }
+    }
+
     return updated;
   },
 };
+

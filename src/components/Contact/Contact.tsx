@@ -8,6 +8,7 @@ import { CodeTag, CodeClosingTag } from '../Decorative/DevGraphics';
 import { EmailInterfaceModal } from './EmailInterfaceModal';
 import { AppBrandIcon } from '../Social/AppBrandIcon';
 import { AppBrandTile } from '../Social/AppBrandTile';
+import { formatSocialUrl } from '../../utils/urlHelper';
 
 interface ContactProps {
   profile: Profile;
@@ -127,22 +128,39 @@ export const Contact: React.FC<ContactProps> = ({ profile, socialLinks }) => {
 
         {/* Circular 3D App Ecosystem Badges */}
         <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 md:gap-10 my-8 sm:my-10">
-          {activeLinks.map((link) => (
-            <AppBrandTile
-              key={link.id}
-              platform={link.platform}
-              label={link.label}
-              url={link.url}
-              layout="circle"
-              size="lg"
-              onClick={(e) => {
-                if (link.platform === 'email') {
-                  e.preventDefault();
-                  setIsEmailModalOpen(true);
-                }
-              }}
-            />
-          ))}
+          {activeLinks.map((link) => {
+            let finalUrl = link.url;
+            if (link.platform === 'phone' && profile.phone) {
+              finalUrl = formatSocialUrl('phone', profile.phone);
+            } else if (
+              link.platform === 'whatsapp' &&
+              (link.url.includes('8958364005') || !link.url) &&
+              profile.phone
+            ) {
+              finalUrl = formatSocialUrl('whatsapp', profile.phone);
+            } else if (link.platform === 'email' && profile.email) {
+              finalUrl = formatSocialUrl('email', profile.email);
+            } else {
+              finalUrl = formatSocialUrl(link.platform, link.url);
+            }
+
+            return (
+              <AppBrandTile
+                key={link.id}
+                platform={link.platform}
+                label={link.label}
+                url={finalUrl}
+                layout="circle"
+                size="lg"
+                onClick={(e) => {
+                  if (link.platform === 'email') {
+                    e.preventDefault();
+                    setIsEmailModalOpen(true);
+                  }
+                }}
+              />
+            );
+          })}
         </div>
 
         {/* Direct Email Address Display & 1-Click Interface Trigger */}
@@ -301,36 +319,53 @@ export const Contact: React.FC<ContactProps> = ({ profile, socialLinks }) => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {activeLinks.map((link) => (
-              <AppBrandTile
-                key={link.id}
-                platform={link.platform}
-                label={link.label}
-                url={link.url}
-                layout="card"
-                description={
-                  link.platform === 'linkedin'
-                    ? 'Professional profile, recommendations & InMail'
-                    : link.platform === 'github'
-                    ? 'Source code, repositories & technical activity'
-                    : link.platform === 'whatsapp'
-                    ? 'Instant direct messaging & project discussions'
-                    : link.platform === 'instagram'
-                    ? 'Visual dev work, creative projects & stories'
-                    : link.platform === 'email'
-                    ? 'Formal inquiries, resume reviews & hiring'
-                    : link.platform === 'phone'
-                    ? 'Direct voice call & cellular text line'
-                    : 'External communication channel'
-                }
-                onClick={(e) => {
-                  if (link.platform === 'email') {
-                    e.preventDefault();
-                    setIsEmailModalOpen(true);
+            {activeLinks.map((link) => {
+              let finalUrl = link.url;
+              if (link.platform === 'phone' && profile.phone) {
+                finalUrl = formatSocialUrl('phone', profile.phone);
+              } else if (
+                link.platform === 'whatsapp' &&
+                (link.url.includes('8958364005') || !link.url) &&
+                profile.phone
+              ) {
+                finalUrl = formatSocialUrl('whatsapp', profile.phone);
+              } else if (link.platform === 'email' && profile.email) {
+                finalUrl = formatSocialUrl('email', profile.email);
+              } else {
+                finalUrl = formatSocialUrl(link.platform, link.url);
+              }
+
+              return (
+                <AppBrandTile
+                  key={link.id}
+                  platform={link.platform}
+                  label={link.label}
+                  url={finalUrl}
+                  layout="card"
+                  description={
+                    link.platform === 'linkedin'
+                      ? 'Professional profile, recommendations & InMail'
+                      : link.platform === 'github'
+                      ? 'Source code, repositories & technical activity'
+                      : link.platform === 'whatsapp'
+                      ? 'Instant direct messaging & project discussions'
+                      : link.platform === 'instagram'
+                      ? 'Visual dev work, creative projects & stories'
+                      : link.platform === 'email'
+                      ? 'Formal inquiries, resume reviews & hiring'
+                      : link.platform === 'phone'
+                      ? 'Direct voice call & cellular text line'
+                      : 'External communication channel'
                   }
-                }}
-              />
-            ))}
+                  onClick={(e) => {
+                    if (link.platform === 'email') {
+                      e.preventDefault();
+                      setIsEmailModalOpen(true);
+                    }
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
 

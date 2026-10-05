@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Trophy } from 'lucide-react';
+import { Plus, Edit, Trash2, X } from 'lucide-react';
 import { achievementService } from '../../services/achievementService';
 import { Achievement } from '../../types';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';

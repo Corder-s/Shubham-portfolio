@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Settings,
   Save,
   CheckCircle2,
   AlertCircle,
@@ -13,21 +12,92 @@ import {
   X,
   Globe,
   Sparkles,
-  FileCode,
   Bot,
-  MessageSquare,
+  Share2,
 } from 'lucide-react';
 import { settingsService } from '../../services/settingsService';
+import { socialService } from '../../services/socialService';
+import { profileService } from '../../services/profileService';
 import { localStore } from '../../services/localStore';
 import { isSupabaseConfigured } from '../../services/supabaseClient';
 import { authService } from '../../services/authService';
-import { SiteSettings } from '../../types';
+import { SiteSettings, SocialLink } from '../../types';
+import { AppBrandIcon } from '../../components/Social/AppBrandIcon';
+import { formatSocialUrl } from '../../utils/urlHelper';
 
 export const AdminSettings: React.FC = () => {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
+  const [, setSocialLinks] = useState<SocialLink[]>([]);
+  const [socialInputs, setSocialInputs] = useState<{
+    instagram: string;
+    whatsapp: string;
+    phone: string;
+    email: string;
+    linkedin: string;
+    github: string;
+  }>({
+    instagram: '',
+    whatsapp: '',
+    phone: '',
+    email: '',
+    linkedin: '',
+    github: '',
+  });
+
   const [isEditingSettings, setIsEditingSettings] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [savingSocials, setSavingSocials] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleSaveSocialsOnly = async () => {
+    setSavingSocials(true);
+    setStatusMsg(null);
+    try {
+      const platforms: Array<'instagram' | 'whatsapp' | 'phone' | 'email' | 'linkedin' | 'github'> = [
+        'instagram',
+        'whatsapp',
+        'phone',
+        'email',
+        'linkedin',
+        'github',
+      ];
+
+      const currentLinks = await socialService.getSocialLinks();
+      for (const plat of platforms) {
+        const val = socialInputs[plat];
+        if (val !== undefined && val.trim() !== '') {
+          const formatted = formatSocialUrl(plat, val);
+          const existing = currentLinks.find((s) => s.platform === plat);
+          if (existing) {
+            await socialService.updateSocialLink(existing.id, { url: formatted });
+          } else {
+            await socialService.createSocialLink({
+              platform: plat,
+              label: plat === 'whatsapp' ? 'WhatsApp' : plat.charAt(0).toUpperCase() + plat.slice(1),
+              url: formatted,
+              is_active: true,
+              display_order: currentLinks.length + 1,
+            });
+          }
+        }
+      }
+
+      if (socialInputs.phone || socialInputs.email) {
+        await profileService.updateProfile({
+          ...(socialInputs.phone ? { phone: socialInputs.phone } : {}),
+          ...(socialInputs.email ? { email: socialInputs.email } : {}),
+        });
+      }
+
+      const refreshed = await socialService.getSocialLinks();
+      setSocialLinks(refreshed);
+      setStatusMsg({ type: 'success', text: 'Social media channels & contact coordinates saved and synchronized!' });
+    } catch (err: any) {
+      setStatusMsg({ type: 'error', text: err.message || 'Failed to save social channels.' });
+    } finally {
+      setSavingSocials(false);
+    }
+  };
 
   // Security & Password states
   const [currentEmail, setCurrentEmail] = useState('Shubham Saini (Admin)');
@@ -38,6 +108,17 @@ export const AdminSettings: React.FC = () => {
 
   useEffect(() => {
     settingsService.getSettings().then(setSettings);
+    socialService.getSocialLinks().then((links) => {
+      setSocialLinks(links);
+      setSocialInputs({
+        instagram: links.find((s) => s.platform === 'instagram')?.url || '',
+        whatsapp: links.find((s) => s.platform === 'whatsapp')?.url || '',
+        phone: links.find((s) => s.platform === 'phone')?.url || '',
+        email: links.find((s) => s.platform === 'email')?.url || '',
+        linkedin: links.find((s) => s.platform === 'linkedin')?.url || '',
+        github: links.find((s) => s.platform === 'github')?.url || '',
+      });
+    });
     authService.getSession().then((session) => {
       if (session?.user?.email) {
         setCurrentEmail(session.user.email);
@@ -57,8 +138,49 @@ export const AdminSettings: React.FC = () => {
     try {
       const updated = await settingsService.updateSettings(settings);
       setSettings(updated);
-      setStatusMsg({ type: 'success', text: 'System settings saved and synchronized.' });
-      // Collapse into summarized form
+
+      // Synchronize social channels
+      const platforms: Array<'instagram' | 'whatsapp' | 'phone' | 'email' | 'linkedin' | 'github'> = [
+        'instagram',
+        'whatsapp',
+        'phone',
+        'email',
+        'linkedin',
+        'github',
+      ];
+
+      const currentLinks = await socialService.getSocialLinks();
+      for (const plat of platforms) {
+        const val = socialInputs[plat];
+        if (val !== undefined && val.trim() !== '') {
+          const formatted = formatSocialUrl(plat, val);
+          const existing = currentLinks.find((s) => s.platform === plat);
+          if (existing) {
+            await socialService.updateSocialLink(existing.id, { url: formatted });
+          } else {
+            await socialService.createSocialLink({
+              platform: plat,
+              label: plat === 'whatsapp' ? 'WhatsApp' : plat.charAt(0).toUpperCase() + plat.slice(1),
+              url: formatted,
+              is_active: true,
+              display_order: currentLinks.length + 1,
+            });
+          }
+        }
+      }
+
+      // Also sync phone & email to profile
+      if (socialInputs.phone || socialInputs.email) {
+        await profileService.updateProfile({
+          ...(socialInputs.phone ? { phone: socialInputs.phone } : {}),
+          ...(socialInputs.email ? { email: socialInputs.email } : {}),
+        });
+      }
+
+      const refreshed = await socialService.getSocialLinks();
+      setSocialLinks(refreshed);
+
+      setStatusMsg({ type: 'success', text: 'System settings and social channels saved & synchronized.' });
       setIsEditingSettings(false);
     } catch (err: any) {
       setStatusMsg({ type: 'error', text: err.message || 'Failed to save settings.' });
@@ -139,6 +261,137 @@ export const AdminSettings: React.FC = () => {
           <span>{statusMsg.text}</span>
         </div>
       )}
+
+      {/* 1. TOP PROMINENT CARD: Public Social Profiles & Communication Endpoints */}
+      <div className="bg-slate-800/90 border border-indigo-500/50 rounded-xl p-6 shadow-xl space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <Share2 className="w-5 h-5 text-indigo-400" />
+              <h3 className="text-base font-bold text-white uppercase tracking-wider">
+                Connected Public Accounts &amp; Social Media
+              </h3>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800">
+                ACTIVE
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-1">
+              Configure your Instagram, WhatsApp, Phone, and other public handles. These directly control the clickable icons across your portfolio.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleSaveSocialsOnly}
+            disabled={savingSocials}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
+          >
+            <Save className="w-3.5 h-3.5" />
+            <span>{savingSocials ? 'Saving...' : 'Save Social Channels'}</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+          {/* Instagram */}
+          <div className="p-4 bg-slate-900/90 border border-slate-700/80 rounded-xl space-y-2">
+            <div className="flex items-center gap-2">
+              <AppBrandIcon platform="instagram" size="xs" variant="app-tile" />
+              <label className="text-xs font-bold text-white">Instagram Profile</label>
+            </div>
+            <input
+              type="text"
+              value={socialInputs.instagram}
+              onChange={(e) => setSocialInputs({ ...socialInputs, instagram: e.target.value })}
+              placeholder="https://instagram.com/... or @handle"
+              className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+            {socialInputs.instagram && (
+              <p className="text-[10px] text-emerald-400 font-mono truncate">
+                Will open: {formatSocialUrl('instagram', socialInputs.instagram)}
+              </p>
+            )}
+          </div>
+
+          {/* WhatsApp */}
+          <div className="p-4 bg-slate-900/90 border border-slate-700/80 rounded-xl space-y-2">
+            <div className="flex items-center gap-2">
+              <AppBrandIcon platform="whatsapp" size="xs" variant="app-tile" />
+              <label className="text-xs font-bold text-white">WhatsApp Chat</label>
+            </div>
+            <input
+              type="text"
+              value={socialInputs.whatsapp}
+              onChange={(e) => setSocialInputs({ ...socialInputs, whatsapp: e.target.value })}
+              placeholder="+91 7983873223 or https://wa.me/..."
+              className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+            {socialInputs.whatsapp && (
+              <p className="text-[10px] text-emerald-400 font-mono truncate">
+                Will open: {formatSocialUrl('whatsapp', socialInputs.whatsapp)}
+              </p>
+            )}
+          </div>
+
+          {/* Phone */}
+          <div className="p-4 bg-slate-900/90 border border-slate-700/80 rounded-xl space-y-2">
+            <div className="flex items-center gap-2">
+              <AppBrandIcon platform="phone" size="xs" variant="app-tile" />
+              <label className="text-xs font-bold text-white">Direct Phone (Calls / SMS)</label>
+            </div>
+            <input
+              type="text"
+              value={socialInputs.phone}
+              onChange={(e) => setSocialInputs({ ...socialInputs, phone: e.target.value })}
+              placeholder="+91 7983873223"
+              className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+          </div>
+
+          {/* Email */}
+          <div className="p-4 bg-slate-900/90 border border-slate-700/80 rounded-xl space-y-2">
+            <div className="flex items-center gap-2">
+              <AppBrandIcon platform="email" size="xs" variant="app-tile" />
+              <label className="text-xs font-bold text-white">Email Address</label>
+            </div>
+            <input
+              type="email"
+              value={socialInputs.email}
+              onChange={(e) => setSocialInputs({ ...socialInputs, email: e.target.value })}
+              placeholder="damnitzshuham1406@gmail.com"
+              className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+          </div>
+
+          {/* LinkedIn */}
+          <div className="p-4 bg-slate-900/90 border border-slate-700/80 rounded-xl space-y-2">
+            <div className="flex items-center gap-2">
+              <AppBrandIcon platform="linkedin" size="xs" variant="app-tile" />
+              <label className="text-xs font-bold text-white">LinkedIn Profile</label>
+            </div>
+            <input
+              type="text"
+              value={socialInputs.linkedin}
+              onChange={(e) => setSocialInputs({ ...socialInputs, linkedin: e.target.value })}
+              placeholder="https://linkedin.com/in/..."
+              className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+          </div>
+
+          {/* GitHub */}
+          <div className="p-4 bg-slate-900/90 border border-slate-700/80 rounded-xl space-y-2">
+            <div className="flex items-center gap-2">
+              <AppBrandIcon platform="github" size="xs" variant="app-tile" />
+              <label className="text-xs font-bold text-white">GitHub Profile</label>
+            </div>
+            <input
+              type="text"
+              value={socialInputs.github}
+              onChange={(e) => setSocialInputs({ ...socialInputs, github: e.target.value })}
+              placeholder="https://github.com/..."
+              className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Supabase Connection Status Card */}
       <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -315,6 +568,7 @@ export const AdminSettings: React.FC = () => {
             </p>
           </div>
 
+
           {/* AI Portfolio Assistant Status & Config Summary */}
           <div className="pt-4 border-t border-slate-700/70 space-y-4">
             <div className="flex items-center justify-between">
@@ -470,6 +724,114 @@ export const AdminSettings: React.FC = () => {
                 onChange={(e) => setSettings({ ...settings, footer_text: e.target.value })}
                 className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
+            </div>
+          </div>
+
+          {/* Social Channels Configuration Card in Edit Mode */}
+          <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-6 shadow-lg space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-700 pb-3">
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                Public Social Profiles &amp; Communication Endpoints
+              </h3>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
+                1-CLICK SYNC
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                  <AppBrandIcon platform="instagram" size="xs" variant="app-tile" />
+                  <span>Instagram Profile URL / Handle</span>
+                </label>
+                <input
+                  type="text"
+                  value={socialInputs.instagram}
+                  onChange={(e) => setSocialInputs({ ...socialInputs, instagram: e.target.value })}
+                  placeholder="https://instagram.com/your_username or @your_username"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+                {socialInputs.instagram && (
+                  <p className="text-[10px] text-emerald-400 font-mono mt-1 truncate">
+                    Links to: {formatSocialUrl('instagram', socialInputs.instagram)}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                  <AppBrandIcon platform="whatsapp" size="xs" variant="app-tile" />
+                  <span>WhatsApp Number / Link</span>
+                </label>
+                <input
+                  type="text"
+                  value={socialInputs.whatsapp}
+                  onChange={(e) => setSocialInputs({ ...socialInputs, whatsapp: e.target.value })}
+                  placeholder="+91 7983873223 or https://wa.me/..."
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+                {socialInputs.whatsapp && (
+                  <p className="text-[10px] text-emerald-400 font-mono mt-1 truncate">
+                    Links to: {formatSocialUrl('whatsapp', socialInputs.whatsapp)}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                  <AppBrandIcon platform="phone" size="xs" variant="app-tile" />
+                  <span>Direct Phone (Calls / SMS)</span>
+                </label>
+                <input
+                  type="text"
+                  value={socialInputs.phone}
+                  onChange={(e) => setSocialInputs({ ...socialInputs, phone: e.target.value })}
+                  placeholder="+91 7983873223"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                  <AppBrandIcon platform="email" size="xs" variant="app-tile" />
+                  <span>Contact Email</span>
+                </label>
+                <input
+                  type="email"
+                  value={socialInputs.email}
+                  onChange={(e) => setSocialInputs({ ...socialInputs, email: e.target.value })}
+                  placeholder="damnitzshuham1406@gmail.com"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                  <AppBrandIcon platform="linkedin" size="xs" variant="app-tile" />
+                  <span>LinkedIn Profile URL</span>
+                </label>
+                <input
+                  type="text"
+                  value={socialInputs.linkedin}
+                  onChange={(e) => setSocialInputs({ ...socialInputs, linkedin: e.target.value })}
+                  placeholder="https://linkedin.com/in/..."
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                  <AppBrandIcon platform="github" size="xs" variant="app-tile" />
+                  <span>GitHub Profile URL</span>
+                </label>
+                <input
+                  type="text"
+                  value={socialInputs.github}
+                  onChange={(e) => setSocialInputs({ ...socialInputs, github: e.target.value })}
+                  placeholder="https://github.com/..."
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
             </div>
           </div>
 

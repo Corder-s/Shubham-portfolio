@@ -3,12 +3,10 @@ import {
   ExternalLink,
   FolderGit2,
   Users,
-  GitBranch,
   Star,
   GitCommit,
   RefreshCw,
   Clock,
-  Sparkles,
 } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from '../Decorative/Scribbles';
 import { CodeTag, CodeClosingTag } from '../Decorative/DevGraphics';
@@ -22,7 +20,6 @@ export const GithubSection: React.FC = () => {
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
   const [events, setEvents] = useState<GitHubEvent[]>([]);
   const [socialPosts, setSocialPosts] = useState<SocialFeedPost[]>(initialSocialPosts);
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchLiveTelemetry = async () => {
@@ -42,7 +39,6 @@ export const GithubSection: React.FC = () => {
     } catch (err) {
       console.warn('Error fetching live social telemetry:', err);
     } finally {
-      setLoading(false);
       setRefreshing(false);
     }
   };
@@ -255,7 +251,6 @@ export const GithubSection: React.FC = () => {
             ) : (
               events.map((ev) => {
                 const commitMsg = ev.payload.commits?.[0]?.message || 'Repository update dispatched';
-                const isPush = ev.type === 'PushEvent';
 
                 return (
                   <div

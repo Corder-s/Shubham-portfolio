@@ -10,10 +10,10 @@ import {
   Check,
   Sparkles,
 } from 'lucide-react';
-import { GithubIcon, LinkedinIcon } from '../Decorative/Scribbles';
 import { SocialLink } from '../../types';
 import { EmailInterfaceModal } from '../Contact/EmailInterfaceModal';
 import { AppBrandIcon } from '../Social/AppBrandIcon';
+import { formatSocialUrl } from '../../utils/urlHelper';
 
 interface WhatsAppButtonProps {
   phone?: string;
@@ -22,8 +22,8 @@ interface WhatsAppButtonProps {
 }
 
 export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
-  phone = '+918958364005',
-  email = 'damnitshuham1406@gmail.com',
+  phone = '+917983873223',
+  email = 'damnitzshuham1406@gmail.com',
   socialLinks = [],
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,27 +57,39 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   const cleanNumber = phone.replace(/[^0-9]/g, '');
 
   // Extract dynamic links or fallback to defaults
-  const waLink =
-    socialLinks.find((s) => s.platform === 'whatsapp' && s.is_active)?.url ||
-    `https://wa.me/${cleanNumber}?text=${encodeURIComponent(
-      'Hi Shubham, I visited your developer portfolio and would like to connect!'
-    )}`;
+  const waSocial = socialLinks.find((s) => s.platform === 'whatsapp' && s.is_active);
+  const waLink = waSocial
+    ? formatSocialUrl('whatsapp', waSocial.url)
+    : `https://wa.me/${cleanNumber}?text=${encodeURIComponent(
+        'Hi Shubham, I visited your developer portfolio and would like to connect!'
+      )}`;
 
-  const liLink =
-    socialLinks.find((s) => s.platform === 'linkedin' && s.is_active)?.url ||
-    'https://www.linkedin.com/in/shubham-saini-33537a374/';
+  const liSocial = socialLinks.find((s) => s.platform === 'linkedin' && s.is_active);
+  const liLink = liSocial
+    ? formatSocialUrl('linkedin', liSocial.url)
+    : 'https://www.linkedin.com/in/shubham-saini-33537a374/';
 
-  const ghLink =
-    socialLinks.find((s) => s.platform === 'github' && s.is_active)?.url ||
-    'https://github.com/Corder-s';
+  const ghSocial = socialLinks.find((s) => s.platform === 'github' && s.is_active);
+  const ghLink = ghSocial
+    ? formatSocialUrl('github', ghSocial.url)
+    : 'https://github.com/Corder-s';
 
-  const mailLink = `mailto:${email}?subject=${encodeURIComponent(
-    'Developer Inquiry / Project Collaboration'
-  )}&body=${encodeURIComponent(
-    'Hi Shubham,\n\nI was reviewing your developer portfolio and would like to discuss an opportunity.\n\nBest regards,'
-  )}`;
+  const instaSocial = socialLinks.find((s) => s.platform === 'instagram' && s.is_active);
+  const instaLink = instaSocial ? formatSocialUrl('instagram', instaSocial.url) : null;
 
-  const telLink = `tel:${phone.replace(/\s+/g, '')}`;
+  const phoneSocial = socialLinks.find((s) => s.platform === 'phone' && s.is_active);
+  const telLink = phoneSocial
+    ? formatSocialUrl('phone', phoneSocial.url)
+    : formatSocialUrl('phone', phone);
+
+  const mailSocial = socialLinks.find((s) => s.platform === 'email' && s.is_active);
+  const mailLink = mailSocial
+    ? formatSocialUrl('email', mailSocial.url)
+    : `mailto:${email}?subject=${encodeURIComponent(
+        'Developer Inquiry / Project Collaboration'
+      )}&body=${encodeURIComponent(
+        'Hi Shubham,\n\nI was reviewing your developer portfolio and would like to discuss an opportunity.\n\nBest regards,'
+      )}`;
 
   const copyToClipboard = (text: string, type: 'email' | 'phone') => {
     navigator.clipboard.writeText(text);
@@ -96,6 +108,20 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
       actionText: 'Open Chat',
       color: '#25D366',
     },
+    ...(instaLink
+      ? [
+          {
+            id: 'instagram',
+            platform: 'instagram',
+            name: 'Instagram Direct / Feed',
+            badge: 'VISUAL / DM',
+            desc: 'Follow updates, message directly, and explore technical creative builds',
+            href: instaLink,
+            actionText: 'Open Profile',
+            color: '#E1306C',
+          },
+        ]
+      : []),
     {
       id: 'linkedin',
       platform: 'linkedin',

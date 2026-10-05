@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, CheckCircle2, Terminal, Code2 } from 'lucide-react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { GithubIcon } from '../../components/Decorative/Scribbles';
-import { CodeTag, CodeClosingTag } from '../../components/Decorative/DevGraphics';
 import { projectService } from '../../services/projectService';
 import { Project } from '../../types';
 

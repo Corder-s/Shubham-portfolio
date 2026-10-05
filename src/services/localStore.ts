@@ -44,6 +44,9 @@ function getStoredItem<T>(key: string, defaultVal: T): T {
 function setStoredItem<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('portfolio_data_updated', { detail: { key, value } }));
+    }
   } catch (e) {
     console.error(`Failed to save to localStorage (${key})`, e);
   }
@@ -87,6 +90,18 @@ export const localStore = {
     links.forEach((l: any) => {
       if (l.platform === 'email' && (l.url.includes('sainishubham.dev@gmail.com') || !l.url)) {
         l.url = 'mailto:damnitzshuham1406@gmail.com';
+        changed = true;
+      }
+      if (l.platform === 'phone' && (l.url.includes('8958364005') || !l.url)) {
+        l.url = 'tel:+917983873223';
+        changed = true;
+      }
+      if (l.platform === 'whatsapp' && (l.url.includes('8958364005') || !l.url)) {
+        l.url = 'https://wa.me/917983873223';
+        changed = true;
+      }
+      if (l.platform === 'instagram' && (l.url.includes('damn.itz_shubham') || !l.url)) {
+        l.url = 'https://instagram.com/shubham.saini';
         changed = true;
       }
     });

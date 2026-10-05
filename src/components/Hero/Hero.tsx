@@ -1,15 +1,79 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDownRight, Terminal, Code2, Sparkles, Download, Cpu } from 'lucide-react';
-import { Profile } from '../../types';
+import { ArrowDownRight, Terminal, Download } from 'lucide-react';
+import { Profile, SocialLink } from '../../types';
 import { InteractiveOrbitRing, CodeTag, CodeClosingTag, HeroConnectionCircuitFrame } from '../Decorative/DevGraphics';
 import { AppBrandIcon } from '../Social/AppBrandIcon';
+import { formatSocialUrl } from '../../utils/urlHelper';
 
 interface HeroProps {
   profile: Profile;
+  socialLinks?: SocialLink[];
 }
 
-export const Hero: React.FC<HeroProps> = ({ profile }) => {
+const platformHoverStyles: Record<string, string> = {
+  github: 'hover:border-[#02F74C] hover:shadow-[0_0_15px_rgba(2,247,76,0.3)]',
+  linkedin: 'hover:border-[#0A66C2] hover:shadow-[0_0_15px_rgba(10,102,194,0.4)]',
+  whatsapp: 'hover:border-[#25D366] hover:shadow-[0_0_15px_rgba(37,211,102,0.4)]',
+  instagram: 'hover:border-[#E1306C] hover:shadow-[0_0_15px_rgba(225,48,108,0.4)]',
+  email: 'hover:border-[#EA4335] hover:shadow-[0_0_15px_rgba(234,67,53,0.3)]',
+  phone: 'hover:border-[#02F74C] hover:shadow-[0_0_15px_rgba(2,247,76,0.4)]',
+  leetcode: 'hover:border-[#FFA116] hover:shadow-[0_0_15px_rgba(255,161,22,0.4)]',
+};
+
+export const Hero: React.FC<HeroProps> = ({ profile, socialLinks = [] }) => {
+  // Derive dynamic channels from active socialLinks or fallback to profile-derived defaults
+  const activeLinks = socialLinks.filter((s) => s.is_active);
+
+  const displayChannels =
+    activeLinks.length > 0
+      ? activeLinks
+      : [
+          {
+            id: 'def-gh',
+            platform: 'github' as const,
+            label: 'GitHub',
+            url: 'https://github.com/Corder-s',
+            is_active: true,
+            display_order: 1,
+          },
+          {
+            id: 'def-li',
+            platform: 'linkedin' as const,
+            label: 'LinkedIn',
+            url: 'https://www.linkedin.com/in/shubham-saini-33537a374/',
+            is_active: true,
+            display_order: 2,
+          },
+          {
+            id: 'def-wa',
+            platform: 'whatsapp' as const,
+            label: 'WhatsApp',
+            url: profile.phone
+              ? formatSocialUrl('whatsapp', profile.phone)
+              : 'https://wa.me/917983873223',
+            is_active: true,
+            display_order: 3,
+          },
+          {
+            id: 'def-ig',
+            platform: 'instagram' as const,
+            label: 'Instagram',
+            url: 'https://instagram.com/shubham.saini',
+            is_active: true,
+            display_order: 4,
+          },
+          {
+            id: 'def-em',
+            platform: 'email' as const,
+            label: 'Email',
+            url: profile.email
+              ? formatSocialUrl('email', profile.email)
+              : 'mailto:damnitzshuham1406@gmail.com',
+            is_active: true,
+            display_order: 5,
+          },
+        ];
   return (
     <section
       id="home"
@@ -130,54 +194,44 @@ export const Hero: React.FC<HeroProps> = ({ profile }) => {
               <span className="text-[11px] text-[#76A988] font-bold mr-1">
                 // CONNECT:
               </span>
-              <a
-                href="https://github.com/Corder-s"
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#02F74C] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(2,247,76,0.3)]"
-                title="Browse GitHub Repos"
-              >
-                <AppBrandIcon platform="github" size="xs" variant="app-tile" />
-                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">GitHub</span>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/shubham-saini-33537a374/"
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#0A66C2] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(10,102,194,0.4)]"
-                title="Connect on LinkedIn"
-              >
-                <AppBrandIcon platform="linkedin" size="xs" variant="app-tile" />
-                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">LinkedIn</span>
-              </a>
-              <a
-                href="https://wa.me/918958364005"
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#25D366] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(37,211,102,0.4)]"
-                title="Message on WhatsApp"
-              >
-                <AppBrandIcon platform="whatsapp" size="xs" variant="app-tile" />
-                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">WhatsApp</span>
-              </a>
-              <a
-                href="https://www.instagram.com/damn.itz_shubham/"
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#E1306C] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(225,48,108,0.4)]"
-                title="Follow on Instagram"
-              >
-                <AppBrandIcon platform="instagram" size="xs" variant="app-tile" />
-                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">Instagram</span>
-              </a>
-              <a
-                href="mailto:damnitshuham1406@gmail.com"
-                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#EA4335] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(234,67,53,0.3)]"
-                title="Send Direct Email"
-              >
-                <AppBrandIcon platform="email" size="xs" variant="app-tile" />
-                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">Email</span>
-              </a>
+              {displayChannels.map((link) => {
+                let targetUrl = link.url;
+                if (link.platform === 'phone' && profile.phone) {
+                  targetUrl = formatSocialUrl('phone', profile.phone);
+                } else if (
+                  link.platform === 'whatsapp' &&
+                  (link.url.includes('8958364005') || !link.url) &&
+                  profile.phone
+                ) {
+                  targetUrl = formatSocialUrl('whatsapp', profile.phone);
+                } else if (link.platform === 'email' && profile.email) {
+                  targetUrl = formatSocialUrl('email', profile.email);
+                } else {
+                  targetUrl = formatSocialUrl(link.platform, link.url);
+                }
+
+                const formattedUrl = targetUrl;
+                const hoverStyle =
+                  platformHoverStyles[link.platform.toLowerCase()] ||
+                  'hover:border-[#02F74C] hover:shadow-[0_0_15px_rgba(2,247,76,0.3)]';
+                const isSelf = link.platform.toLowerCase() === 'email' || link.platform.toLowerCase() === 'phone';
+
+                return (
+                  <a
+                    key={link.id || link.platform}
+                    href={formattedUrl}
+                    target={isSelf ? '_self' : '_blank'}
+                    rel={isSelf ? undefined : 'noopener noreferrer'}
+                    className={`group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 transition-all hover:scale-105 ${hoverStyle}`}
+                    title={link.label || `Connect on ${link.platform}`}
+                  >
+                    <AppBrandIcon platform={link.platform} size="xs" variant="app-tile" />
+                    <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">
+                      {link.label || link.platform}
+                    </span>
+                  </a>
+                );
+              })}
             </div>
 
             {/* Terminal Status Ticker */}

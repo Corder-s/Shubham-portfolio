@@ -23,13 +23,9 @@ interface AIAgentChatProps {
 export const AIAgentChat: React.FC<AIAgentChatProps> = ({ settings }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [messages, setMessages] = useState<AIAgentMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [hovered, setHovered] = useState(false);
-
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const assistantName = settings?.ai_assistant_name || 'Ask Shubham';
   const welcomeText =
@@ -40,22 +36,23 @@ export const AIAgentChat: React.FC<AIAgentChatProps> = ({ settings }) => {
       ? settings.ai_suggested_questions
       : DEFAULT_SUGGESTED_QUESTIONS;
 
-  // Initialize or restore session messages
-  useEffect(() => {
+  const [messages, setMessages] = useState<AIAgentMessage[]>(() => {
     const saved = aiAgentService.getStoredMessages();
     if (saved.length > 0) {
-      setMessages(saved);
-    } else {
-      const initialGreeting: AIAgentMessage = {
-        id: 'msg-welcome',
-        sender: 'assistant',
-        content: welcomeText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages([initialGreeting]);
-      aiAgentService.saveMessages([initialGreeting]);
+      return saved;
     }
-  }, [welcomeText]);
+    const initialGreeting: AIAgentMessage = {
+      id: 'msg-welcome',
+      sender: 'assistant',
+      content: welcomeText,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+    aiAgentService.saveMessages([initialGreeting]);
+    return [initialGreeting];
+  });
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -194,6 +191,10 @@ export const AIAgentChat: React.FC<AIAgentChatProps> = ({ settings }) => {
       );
     });
   };
+
+  if (settings && settings.ai_enabled === false) {
+    return null;
+  }
 
   return (
     <div className="fixed z-50 font-mono select-none">
