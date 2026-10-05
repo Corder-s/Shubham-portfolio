@@ -75,15 +75,21 @@ function AuthRecoveryRedirector() {
       ((hash.includes('error_description=') || search.includes('error_description=')) &&
         !location.pathname.startsWith('/admin'));
 
-    if (hasRecoveryIntent && location.pathname !== '/admin/login') {
-      navigate(`/admin/login${search}${hash}`, { replace: true });
+    if (hasRecoveryIntent && location.pathname !== '/admin/reset-password') {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('supabase_recovery_pending', 'true');
+      }
+      navigate(`/admin/reset-password${search}${hash}`, { replace: true });
     }
 
     if (isSupabaseConfigured && supabase) {
       const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
         if (event === 'PASSWORD_RECOVERY') {
-          if (window.location.pathname !== '/admin/login') {
-            navigate('/admin/login', { replace: true });
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('supabase_recovery_pending', 'true');
+          }
+          if (location.pathname !== '/admin/reset-password') {
+            navigate('/admin/reset-password', { replace: true });
           }
         }
       });
@@ -104,6 +110,16 @@ export function App() {
         {/* Public Creative Portfolio Routes (Public visitors only touch these) */}
         <Route path="/" element={<HomePage />} />
         <Route path="/projects/:slug" element={<ProjectDetailsPage />} />
+
+        {/* Dedicated Admin Password Reset Route */}
+        <Route
+          path="/admin/reset-password"
+          element={
+            <Suspense fallback={<AdminLoadingFallback />}>
+              <AdminLoginPage initialMode="reset" />
+            </Suspense>
+          }
+        />
 
         {/* Admin Authentication Route */}
         <Route

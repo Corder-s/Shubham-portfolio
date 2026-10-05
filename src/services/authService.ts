@@ -170,7 +170,7 @@ export const authService = {
       }
       // Normalize trailing slashes
       siteUrl = siteUrl.replace(/\/+$/, '');
-      const redirectTo = `${siteUrl}/admin/login`;
+      const redirectTo = `${siteUrl}/admin/reset-password`;
 
       const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
         redirectTo,

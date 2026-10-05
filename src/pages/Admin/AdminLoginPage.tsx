@@ -14,13 +14,29 @@ import {
 import { authService } from '../../services/authService';
 import { supabase, isSupabaseConfigured } from '../../services/supabaseClient';
 
-export const AdminLoginPage: React.FC = () => {
-  const [mode, setMode] = useState<'signin' | 'forgot' | 'reset'>('signin');
+interface AdminLoginPageProps {
+  initialMode?: 'signin' | 'forgot' | 'reset';
+}
+
+export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ initialMode }) => {
+  const [mode, setMode] = useState<'signin' | 'forgot' | 'reset'>(() => {
+    if (initialMode) return initialMode;
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname.includes('reset-password')) return 'reset';
+      if (sessionStorage.getItem('supabase_recovery_pending') === 'true') return 'reset';
+    }
+    return 'signin';
+  });
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState(() => {
+    if (typeof window !== 'undefined' && window.location.pathname.includes('reset-password')) {
+      return 'Recovery session active. Enter your new password below.';
+    }
+    return '';
+  });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -40,17 +56,26 @@ export const AdminLoginPage: React.FC = () => {
       setError(`Auth notification: ${errorCode}`);
     }
 
-    // 2. Check for recovery mode in hash or query
+    // 2. Check for recovery mode in hash, query or pathname
     const type = hashParams.get('type') || searchParams.get('type');
-    if (type === 'recovery' || rawHash.includes('type=recovery') || searchParams.has('code')) {
+    if (
+      type === 'recovery' ||
+      rawHash.includes('type=recovery') ||
+      window.location.pathname.includes('reset-password') ||
+      sessionStorage.getItem('supabase_recovery_pending') === 'true'
+    ) {
       setMode('reset');
-      setSuccessMsg('Recovery session active. Enter your new password below.');
+      sessionStorage.setItem('supabase_recovery_pending', 'true');
+      if (!successMsg) {
+        setSuccessMsg('Recovery session active. Enter your new password below.');
+      }
     }
 
     if (isSupabaseConfigured && supabase) {
       const { data: authListener } = supabase.auth.onAuthStateChange(async (event) => {
         if (event === 'PASSWORD_RECOVERY') {
           setMode('reset');
+          sessionStorage.setItem('supabase_recovery_pending', 'true');
           setSuccessMsg('Authenticated via recovery link. Please choose a new secure password.');
         }
       });
@@ -59,7 +84,7 @@ export const AdminLoginPage: React.FC = () => {
         authListener?.subscription?.unsubscribe();
       };
     }
-  }, []);
+  }, [successMsg]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +127,9 @@ export const AdminLoginPage: React.FC = () => {
           setPassword('');
           setConfirmPassword('');
           setMode('signin');
+          if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('supabase_recovery_pending');
+          }
           // Clean URL hash so refreshing doesn't keep the recovery token
           if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
             window.history.replaceState(null, '', window.location.pathname);

@@ -30,6 +30,12 @@ export const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // If user arrived via password recovery session, redirect to the Set New Password interface
+    if (typeof window !== 'undefined' && sessionStorage.getItem('supabase_recovery_pending') === 'true') {
+      navigate('/admin/reset-password', { replace: true });
+      return;
+    }
+
     authService.getSession().then((sess) => {
       if (!sess.user || sess.user.role !== 'admin') {
         navigate('/admin/login', { replace: true });
