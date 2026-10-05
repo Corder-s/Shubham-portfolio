@@ -132,12 +132,8 @@ export const Contact: React.FC<ContactProps> = ({ profile, socialLinks }) => {
             let finalUrl = link.url;
             if (link.platform === 'phone' && profile.phone) {
               finalUrl = formatSocialUrl('phone', profile.phone);
-            } else if (
-              link.platform === 'whatsapp' &&
-              (link.url.includes('8958364005') || !link.url) &&
-              profile.phone
-            ) {
-              finalUrl = formatSocialUrl('whatsapp', profile.phone);
+            } else if (link.platform === 'whatsapp') {
+              finalUrl = formatSocialUrl('whatsapp', link.url || '+91 8958364005');
             } else if (link.platform === 'email' && profile.email) {
               finalUrl = formatSocialUrl('email', profile.email);
             } else {
@@ -323,12 +319,8 @@ export const Contact: React.FC<ContactProps> = ({ profile, socialLinks }) => {
               let finalUrl = link.url;
               if (link.platform === 'phone' && profile.phone) {
                 finalUrl = formatSocialUrl('phone', profile.phone);
-              } else if (
-                link.platform === 'whatsapp' &&
-                (link.url.includes('8958364005') || !link.url) &&
-                profile.phone
-              ) {
-                finalUrl = formatSocialUrl('whatsapp', profile.phone);
+              } else if (link.platform === 'whatsapp') {
+                finalUrl = formatSocialUrl('whatsapp', link.url || '+91 8958364005');
               } else if (link.platform === 'email' && profile.email) {
                 finalUrl = formatSocialUrl('email', profile.email);
               } else {

@@ -21,7 +21,10 @@ export function formatSocialUrl(platform: string = 'other', rawUrl: string = '')
       const cleanWithCountry = digits.length === 10 ? `91${digits}` : digits;
       return `https://wa.me/${cleanWithCountry}`;
     }
-    return `https://wa.me/917983873223`;
+    if (digits.length > 0) {
+      return `https://wa.me/${digits}`;
+    }
+    return `https://wa.me/918958364005`;
   }
 
   // 2. Phone platform (ALWAYS format as tel:{cleanNumber})

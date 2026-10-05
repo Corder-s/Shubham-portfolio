@@ -49,9 +49,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, socialLinks = [] }) => {
             id: 'def-wa',
             platform: 'whatsapp' as const,
             label: 'WhatsApp',
-            url: profile.phone
-              ? formatSocialUrl('whatsapp', profile.phone)
-              : 'https://wa.me/917983873223',
+            url: 'https://wa.me/918958364005',
             is_active: true,
             display_order: 3,
           },
@@ -59,7 +57,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, socialLinks = [] }) => {
             id: 'def-ig',
             platform: 'instagram' as const,
             label: 'Instagram',
-            url: 'https://instagram.com/shubham.saini',
+            url: 'https://instagram.com/damn.itz_shubham/',
             is_active: true,
             display_order: 4,
           },
@@ -198,12 +196,8 @@ export const Hero: React.FC<HeroProps> = ({ profile, socialLinks = [] }) => {
                 let targetUrl = link.url;
                 if (link.platform === 'phone' && profile.phone) {
                   targetUrl = formatSocialUrl('phone', profile.phone);
-                } else if (
-                  link.platform === 'whatsapp' &&
-                  (link.url.includes('8958364005') || !link.url) &&
-                  profile.phone
-                ) {
-                  targetUrl = formatSocialUrl('whatsapp', profile.phone);
+                } else if (link.platform === 'whatsapp') {
+                  targetUrl = formatSocialUrl('whatsapp', link.url || profile.phone);
                 } else if (link.platform === 'email' && profile.email) {
                   targetUrl = formatSocialUrl('email', profile.email);
                 } else {

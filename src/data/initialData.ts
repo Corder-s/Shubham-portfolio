@@ -325,9 +325,9 @@ export const initialCertifications: Certification[] = [
 export const initialSocialLinks: SocialLink[] = [
   { id: 'soc-1', platform: 'github', label: 'GitHub', url: 'https://github.com/Corder-s', is_active: true, display_order: 1 },
   { id: 'soc-2', platform: 'linkedin', label: 'LinkedIn', url: 'https://www.linkedin.com/in/shubham-saini-33537a374/', is_active: true, display_order: 2 },
-  { id: 'soc-3', platform: 'email', label: 'Email', url: 'mailto:damnitshuham1406@gmail.com', is_active: true, display_order: 3 },
-  { id: 'soc-4', platform: 'whatsapp', label: 'WhatsApp', url: 'https://wa.me/917983873223', is_active: true, display_order: 4 },
-  { id: 'soc-5', platform: 'instagram', label: 'Instagram', url: 'https://instagram.com/shubham.saini', is_active: true, display_order: 5 },
+  { id: 'soc-3', platform: 'email', label: 'Email', url: 'mailto:damnitzshuham1406@gmail.com', is_active: true, display_order: 3 },
+  { id: 'soc-4', platform: 'whatsapp', label: 'WhatsApp', url: 'https://wa.me/918958364005', is_active: true, display_order: 4 },
+  { id: 'soc-5', platform: 'instagram', label: 'Instagram', url: 'https://instagram.com/damn.itz_shubham/', is_active: true, display_order: 5 },
   { id: 'soc-6', platform: 'phone', label: 'Phone', url: 'tel:+917983873223', is_active: true, display_order: 6 },
 ];
 

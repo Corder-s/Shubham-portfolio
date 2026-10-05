@@ -50,20 +50,15 @@ export const profileService = {
     const updated = cloudUpdated || { ...current, ...profile };
     localStore.setProfile(updated);
 
-    // Sync phone & WhatsApp channels if phone was updated
+    // Sync phone channel if phone was updated and phone link is empty
     if (profile.phone && profile.phone.trim()) {
       try {
         const links = localStore.getSocialLinks();
         let changed = false;
-        const cleanPhone = profile.phone.replace(/[^0-9]/g, '');
 
         links.forEach((l) => {
-          if (l.platform === 'phone' && (l.url.includes('8958364005') || !l.url)) {
+          if (l.platform === 'phone' && !l.url) {
             l.url = formatSocialUrl('phone', profile.phone!);
-            changed = true;
-          }
-          if (l.platform === 'whatsapp' && (l.url.includes('8958364005') || !l.url)) {
-            l.url = `https://wa.me/${cleanPhone}`;
             changed = true;
           }
         });
@@ -72,7 +67,7 @@ export const profileService = {
           localStore.setSocialLinks(links);
         }
       } catch (e) {
-        console.warn('Failed to sync phone/whatsapp in localStore:', e);
+        console.warn('Failed to sync phone in localStore:', e);
       }
     }
 

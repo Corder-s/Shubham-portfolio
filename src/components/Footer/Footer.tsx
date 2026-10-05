@@ -49,20 +49,10 @@ export const Footer: React.FC<FooterProps> = ({ socialLinks, profile }) => {
       targetUrl = profile?.email || link?.url || 'damnitzshuham1406@gmail.com';
     } else if (platform === 'whatsapp') {
       label = link?.label || 'WhatsApp';
-      if (link?.url && !link.url.includes('8958364005')) {
-        targetUrl = link.url;
-      } else if (profile?.phone) {
-        targetUrl = profile.phone;
-      } else {
-        targetUrl = link?.url || '+91 7983873223';
-      }
+      targetUrl = link?.url || '+91 8958364005';
     } else if (platform === 'instagram') {
       label = link?.label || 'Instagram';
-      if (link?.url && !link.url.includes('damn.itz_shubham')) {
-        targetUrl = link.url;
-      } else {
-        targetUrl = 'https://instagram.com/shubham.saini';
-      }
+      targetUrl = link?.url || 'https://instagram.com/damn.itz_shubham/';
     } else if (platform === 'phone') {
       label = link?.label || 'Phone';
       targetUrl = profile?.phone || link?.url || '+91 7983873223';

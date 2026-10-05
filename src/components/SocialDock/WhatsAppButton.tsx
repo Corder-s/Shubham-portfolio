@@ -60,7 +60,7 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   const waSocial = socialLinks.find((s) => s.platform === 'whatsapp' && s.is_active);
   const waLink = waSocial
     ? formatSocialUrl('whatsapp', waSocial.url)
-    : `https://wa.me/${cleanNumber}?text=${encodeURIComponent(
+    : `https://wa.me/918958364005?text=${encodeURIComponent(
         'Hi Shubham, I visited your developer portfolio and would like to connect!'
       )}`;
 

@@ -88,20 +88,20 @@ export const localStore = {
     const links = getStoredItem(STORAGE_KEYS.SOCIAL_LINKS, initialSocialLinks);
     let changed = false;
     links.forEach((l: any) => {
-      if (l.platform === 'email' && (l.url.includes('sainishubham.dev@gmail.com') || !l.url)) {
+      if (l.platform === 'email' && !l.url) {
         l.url = 'mailto:damnitzshuham1406@gmail.com';
         changed = true;
       }
-      if (l.platform === 'phone' && (l.url.includes('8958364005') || !l.url)) {
+      if (l.platform === 'phone' && !l.url) {
         l.url = 'tel:+917983873223';
         changed = true;
       }
-      if (l.platform === 'whatsapp' && (l.url.includes('8958364005') || !l.url)) {
-        l.url = 'https://wa.me/917983873223';
+      if (l.platform === 'whatsapp' && !l.url) {
+        l.url = 'https://wa.me/918958364005';
         changed = true;
       }
-      if (l.platform === 'instagram' && (l.url.includes('damn.itz_shubham') || !l.url)) {
-        l.url = 'https://instagram.com/shubham.saini';
+      if (l.platform === 'instagram' && !l.url) {
+        l.url = 'https://instagram.com/damn.itz_shubham/';
         changed = true;
       }
     });
