@@ -163,8 +163,17 @@ export const authService = {
     }
 
     if (isSupabaseConfigured && supabase) {
+      // Determine origin: Prefer VITE_SITE_URL if configured, else window.location.origin
+      let siteUrl = (import.meta.env.VITE_SITE_URL || '').trim();
+      if (!siteUrl && typeof window !== 'undefined' && window.location.origin) {
+        siteUrl = window.location.origin;
+      }
+      // Normalize trailing slashes
+      siteUrl = siteUrl.replace(/\/+$/, '');
+      const redirectTo = `${siteUrl}/admin/login`;
+
       const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
-        redirectTo: `${window.location.origin}/admin/login`,
+        redirectTo,
       });
 
       if (error) {

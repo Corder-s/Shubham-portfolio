@@ -1,9 +1,10 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { HomePage } from './pages/Home/HomePage';
 import { ProjectDetailsPage } from './pages/ProjectDetails/ProjectDetailsPage';
 import { NotFoundPage } from './pages/NotFound/NotFoundPage';
 import { AdminRouteGuard } from './components/Admin/AdminRouteGuard';
+import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 
 // Route-based code splitting: Lazy load Admin components to keep the public bundle fast, light & isolated
 const AdminLoginPage = lazy(() =>
@@ -56,9 +57,49 @@ const AdminLoadingFallback = () => (
   </div>
 );
 
+/**
+ * Global listener that intercepts Supabase recovery links (e.g. from password reset emails)
+ * and automatically routes the user to the admin login page in password-reset mode.
+ */
+function AuthRecoveryRedirector() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const hash = window.location.hash || '';
+    const search = window.location.search || '';
+
+    const hasRecoveryIntent =
+      hash.includes('type=recovery') ||
+      search.includes('type=recovery') ||
+      ((hash.includes('error_description=') || search.includes('error_description=')) &&
+        !location.pathname.startsWith('/admin'));
+
+    if (hasRecoveryIntent && location.pathname !== '/admin/login') {
+      navigate(`/admin/login${search}${hash}`, { replace: true });
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          if (window.location.pathname !== '/admin/login') {
+            navigate('/admin/login', { replace: true });
+          }
+        }
+      });
+      return () => {
+        authListener?.subscription?.unsubscribe();
+      };
+    }
+  }, [navigate, location]);
+
+  return null;
+}
+
 export function App() {
   return (
     <BrowserRouter>
+      <AuthRecoveryRedirector />
       <Routes>
         {/* Public Creative Portfolio Routes (Public visitors only touch these) */}
         <Route path="/" element={<HomePage />} />

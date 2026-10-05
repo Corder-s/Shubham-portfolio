@@ -26,6 +26,27 @@ export const AdminLoginPage: React.FC = () => {
 
   // Listen for Supabase recovery token when user clicks the reset link in their email
   useEffect(() => {
+    // 1. Check URL parameters and hash for any error returned by Supabase (e.g. expired link)
+    const rawHash = window.location.hash ? window.location.hash.replace(/^#/, '') : '';
+    const hashParams = new URLSearchParams(rawHash);
+    const searchParams = new URLSearchParams(window.location.search);
+
+    const errorDesc = hashParams.get('error_description') || searchParams.get('error_description');
+    const errorCode = hashParams.get('error_code') || searchParams.get('error_code');
+
+    if (errorDesc) {
+      setError(decodeURIComponent(errorDesc.replace(/\+/g, ' ')));
+    } else if (errorCode) {
+      setError(`Auth notification: ${errorCode}`);
+    }
+
+    // 2. Check for recovery mode in hash or query
+    const type = hashParams.get('type') || searchParams.get('type');
+    if (type === 'recovery' || rawHash.includes('type=recovery') || searchParams.has('code')) {
+      setMode('reset');
+      setSuccessMsg('Recovery session active. Enter your new password below.');
+    }
+
     if (isSupabaseConfigured && supabase) {
       const { data: authListener } = supabase.auth.onAuthStateChange(async (event) => {
         if (event === 'PASSWORD_RECOVERY') {
@@ -33,12 +54,6 @@ export const AdminLoginPage: React.FC = () => {
           setSuccessMsg('Authenticated via recovery link. Please choose a new secure password.');
         }
       });
-
-      // Also check hash directly in case page reloads with recovery hash
-      if (window.location.hash && window.location.hash.includes('type=recovery')) {
-        setMode('reset');
-        setSuccessMsg('Recovery session active. Enter your new password below.');
-      }
 
       return () => {
         authListener?.subscription?.unsubscribe();
@@ -87,6 +102,10 @@ export const AdminLoginPage: React.FC = () => {
           setPassword('');
           setConfirmPassword('');
           setMode('signin');
+          // Clean URL hash so refreshing doesn't keep the recovery token
+          if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
         } else {
           setError(res.error || 'Failed to update password.');
         }
