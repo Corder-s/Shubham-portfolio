@@ -38,11 +38,11 @@ export const Navbar: React.FC<NavbarProps> = ({ resumeUrl = '/resume.pdf' }) => 
   }, []);
 
   const navLinks = [
-    { num: '01', label: 'ABOUT', href: '#about', id: 'about' },
-    { num: '02', label: 'WORK', href: '#projects', id: 'projects' },
-    { num: '03', label: 'STACK', href: '#skills', id: 'skills' },
-    { num: '04', label: 'EXPERIENCE', href: '#experience', id: 'experience' },
-    { num: '05', label: 'CONTACT', href: '#contact', id: 'contact' },
+    { num: '01', label: 'HOME', href: '#home', id: 'home' },
+    { num: '02', label: 'ABOUT', href: '#about', id: 'about' },
+    { num: '03', label: 'SKILLS', href: '#skills', id: 'skills' },
+    { num: '04', label: 'PROJECTS', href: '#projects', id: 'projects' },
+    { num: '05', label: 'EXPERIENCE', href: '#experience', id: 'experience' },
   ];
 
   const handleNavClick = (href: string) => {
@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({ resumeUrl = '/resume.pdf' }) => 
         </a>
 
         {/* Desktop Code-editor Navigation */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8" aria-label="Developer Navigation">
+        <nav className="hidden md:flex items-center gap-5 lg:gap-7" aria-label="Developer Navigation">
           {navLinks.map((link) => {
             const isActive = activeSection === link.id;
             return (
@@ -102,14 +102,16 @@ export const Navbar: React.FC<NavbarProps> = ({ resumeUrl = '/resume.pdf' }) => 
             );
           })}
 
-          {/* Resume Terminal Button */}
+          {/* Green Highlighted Contact Action Button */}
           <a
-            href={resumeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3 py-1.5 border border-[#02F74C]/50 hover:border-[#02F74C] bg-[#0A0D0C] hover:bg-[#02F74C] text-[#02F74C] hover:text-[#020203] font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 hover:shadow-[0_0_12px_rgba(2,247,76,0.3)]"
+            href="#contact"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavClick('#contact');
+            }}
+            className="px-3.5 py-1.5 border border-[#02F74C] bg-[#02F74C] text-[#020203] font-mono text-xs font-bold uppercase tracking-wider transition-all hover:bg-transparent hover:text-[#02F74C] shadow-[0_0_12px_rgba(2,247,76,0.3)] hover:shadow-[0_0_20px_rgba(2,247,76,0.5)] flex items-center gap-1.5 cursor-pointer"
           >
-            <span>[ RESUME ]</span>
+            <span>[ CONTACT ME ]</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </a>
         </nav>
@@ -149,14 +151,24 @@ export const Navbar: React.FC<NavbarProps> = ({ resumeUrl = '/resume.pdf' }) => 
                 <span className="text-[#02F74C] text-[10px]">&gt;&gt;</span>
               </a>
             ))}
-            <div className="pt-3">
+            <div className="pt-3 space-y-2">
+              <a
+                href="#contact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick('#contact');
+                }}
+                className="block w-full py-2.5 text-center font-mono text-xs font-bold uppercase tracking-wider border border-[#02F74C] bg-[#02F74C] text-[#020203] shadow-[0_0_12px_rgba(2,247,76,0.3)]"
+              >
+                [ CONTACT ME ]
+              </a>
               <a
                 href={resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full py-2.5 text-center font-mono text-xs font-bold uppercase tracking-wider border border-[#02F74C] bg-[#02F74C] text-[#020203] shadow-[0_0_12px_rgba(2,247,76,0.3)]"
+                className="block w-full py-2.5 text-center font-mono text-xs font-bold uppercase tracking-wider border border-[#02F74C]/40 bg-[#0A0D0C] text-[#02F74C]"
               >
-                [ DOWNLOAD CV ]
+                [ RESUME / CV ]
               </a>
             </div>
           </div>

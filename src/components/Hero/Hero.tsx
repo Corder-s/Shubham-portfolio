@@ -75,21 +75,17 @@ export const Hero: React.FC<HeroProps> = ({ profile }) => {
                   &lt;/h1&gt;
                 </div>
 
-                {/* Sub-headline with <p> and </p> tags as in reference */}
+                {/* Sub-headline aligned with Dribbble developer reference */}
                 <div className="mt-4 space-y-2">
                   <div className="font-mono text-sm sm:text-base md:text-lg flex items-center gap-1.5 flex-wrap">
                     <span className="text-[#76A988] select-none">&lt;p&gt;</span>
                     <span className="text-[#02F74C] font-semibold glow-neon">
-                      Entrepreneur and developer
+                      B.Tech CSE Student &amp; Full-Stack Developer
                     </span>
                     <span className="text-[#76A988] select-none">&lt;/p&gt;</span>
                   </div>
-                  <h2 className="font-mono text-xs sm:text-sm text-[#A6A9AA]">
-                    B.Tech CSE Student &amp; Aspiring Full-Stack Developer
-                  </h2>
-                  <p className="font-mono text-xs sm:text-sm text-[#76A988] max-w-lg leading-relaxed pt-1">
-                    {profile.short_bio ||
-                      'Focused on responsive interfaces, scalable backends, practical algorithms, and data-driven systems.'}
+                  <p className="font-mono text-xs sm:text-sm text-[#A6A9AA] max-w-lg leading-relaxed pt-1">
+                    Building modern web applications and exploring AI-powered solutions.
                   </p>
                 </div>
               </HeroConnectionCircuitFrame>
@@ -106,7 +102,15 @@ export const Hero: React.FC<HeroProps> = ({ profile }) => {
                 href="#projects"
                 className="w-full sm:w-auto justify-center px-6 py-3 border border-[#02F74C] bg-[#02F74C] text-[#020203] text-xs sm:text-sm font-bold tracking-wider uppercase transition-all shadow-[0_0_15px_rgba(2,247,76,0.35)] hover:shadow-[0_0_25px_rgba(2,247,76,0.6)] hover:scale-[1.02] flex items-center gap-2 text-center"
               >
-                <span>[ EXPLORE WORK ]</span>
+                <span>[ VIEW MY WORK ]</span>
+                <ArrowDownRight className="w-4 h-4" />
+              </a>
+
+              <a
+                href="#contact"
+                className="w-full sm:w-auto justify-center px-6 py-3 border border-[#02F74C]/50 hover:border-[#02F74C] bg-[#0A0D0C] text-[#02F74C] text-xs sm:text-sm font-bold tracking-wider uppercase transition-all hover:bg-[#02F74C]/10 flex items-center gap-2 text-center"
+              >
+                <span>[ CONTACT ME ]</span>
                 <ArrowDownRight className="w-4 h-4" />
               </a>
 
@@ -114,28 +118,18 @@ export const Hero: React.FC<HeroProps> = ({ profile }) => {
                 href={profile.resume_url || '/resume.pdf'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto justify-center px-6 py-3 border border-[#02F74C]/50 hover:border-[#02F74C] bg-[#0A0D0C] text-[#02F74C] text-xs sm:text-sm font-bold tracking-wider uppercase transition-all hover:bg-[#02F74C]/10 flex items-center gap-2 text-center"
+                className="w-full sm:w-auto justify-center px-4 py-3 border border-[#02F74C]/30 hover:border-[#02F74C] bg-[#0A0D0C] text-[#A6A9AA] hover:text-[#02F74C] text-xs sm:text-sm font-bold tracking-wider uppercase transition-all hover:bg-[#02F74C]/10 flex items-center gap-2 text-center"
               >
                 <Download className="w-4 h-4" />
-                <span>[ DOWNLOAD CV ]</span>
+                <span>[ RESUME ]</span>
               </a>
             </motion.div>
 
             {/* Quick App Access Strip with Official App Badges */}
             <div className="mt-6 flex flex-wrap items-center gap-2 font-mono">
               <span className="text-[11px] text-[#76A988] font-bold mr-1">
-                // CONNECT_APPS:
+                // CONNECT:
               </span>
-              <a
-                href="https://www.linkedin.com/in/shubham-saini-33537a374/"
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#0A66C2] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(10,102,194,0.4)]"
-                title="Connect on LinkedIn"
-              >
-                <AppBrandIcon platform="linkedin" size="xs" variant="app-tile" />
-                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">LinkedIn</span>
-              </a>
               <a
                 href="https://github.com/Corder-s"
                 target="_blank"
@@ -147,7 +141,17 @@ export const Hero: React.FC<HeroProps> = ({ profile }) => {
                 <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">GitHub</span>
               </a>
               <a
-                href="https://wa.me/919876543210"
+                href="https://www.linkedin.com/in/shubham-saini-33537a374/"
+                target="_blank"
+                rel="noreferrer"
+                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#0A66C2] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(10,102,194,0.4)]"
+                title="Connect on LinkedIn"
+              >
+                <AppBrandIcon platform="linkedin" size="xs" variant="app-tile" />
+                <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">LinkedIn</span>
+              </a>
+              <a
+                href="https://wa.me/918958364005"
                 target="_blank"
                 rel="noreferrer"
                 className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#25D366] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(37,211,102,0.4)]"
@@ -157,7 +161,7 @@ export const Hero: React.FC<HeroProps> = ({ profile }) => {
                 <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">WhatsApp</span>
               </a>
               <a
-                href="https://instagram.com/shubham.saini"
+                href="https://www.instagram.com/damn.itz_shubham/"
                 target="_blank"
                 rel="noreferrer"
                 className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#E1306C] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(225,48,108,0.4)]"
@@ -167,7 +171,7 @@ export const Hero: React.FC<HeroProps> = ({ profile }) => {
                 <span className="text-[11px] font-bold text-slate-300 group-hover:text-white">Instagram</span>
               </a>
               <a
-                href="mailto:damnitzshuham1406@gmail.com"
+                href="mailto:damnitshuham1406@gmail.com"
                 className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0A0D0C] border border-white/10 hover:border-[#EA4335] transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(234,67,53,0.3)]"
                 title="Send Direct Email"
               >

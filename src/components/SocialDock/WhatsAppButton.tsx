@@ -22,8 +22,8 @@ interface WhatsAppButtonProps {
 }
 
 export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
-  phone = '+919876543210',
-  email = 'damnitzshuham1406@gmail.com',
+  phone = '+918958364005',
+  email = 'damnitshuham1406@gmail.com',
   socialLinks = [],
 }) => {
   const [isOpen, setIsOpen] = useState(false);

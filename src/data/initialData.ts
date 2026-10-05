@@ -18,21 +18,21 @@ export const initialProfile: Profile = {
   bio: 'I’m a second-year Computer Science & Engineering student in Greater Noida, India. I enjoy building practical software and learning through hands-on projects, coding challenges and continuous experimentation.',
   short_bio: 'A B.Tech Computer Science & Engineering student focused on building responsive interfaces, practical applications, APIs and data-driven projects.',
   location: 'Greater Noida, Uttar Pradesh, India',
-  email: 'damnitzshuham1406@gmail.com',
-  phone: '+91 9876543210',
+  email: 'damnitshuham1406@gmail.com',
+  phone: '+91 8958364005',
   profile_image: '/shubham_photo.png',
   resume_url: '/resume.pdf',
   availability_status: 'OPEN TO INTERNSHIPS + COLLABORATION',
 };
 
 export const initialSiteSettings: SiteSettings = {
-  site_title: 'Shubham Saini — Creative Full-Stack Portfolio & Admin CMS',
+  site_title: 'Shubham Saini — Full-Stack Developer',
   site_description: 'B.Tech Computer Science student and aspiring Full-Stack Developer building responsive interfaces, practical applications and data-driven projects.',
-  seo_title: 'Shubham Saini | Full-Stack Developer',
+  seo_title: 'Shubham Saini — Full-Stack Developer',
   seo_description: 'B.Tech Computer Science student and aspiring Full-Stack Developer building responsive interfaces, practical applications and data-driven projects.',
   location: 'Greater Noida, Uttar Pradesh, India',
-  email: 'damnitzshuham1406@gmail.com',
-  phone: '+91 9876543210',
+  email: 'damnitshuham1406@gmail.com',
+  phone: '+91 8958364005',
   availability: 'Available for Summer 2026/2027 Internships',
   footer_text: '© 2026 Shubham Saini. Crafted with high editorial standards and modern full-stack web architecture.',
   profile_image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800',
@@ -325,10 +325,10 @@ export const initialCertifications: Certification[] = [
 export const initialSocialLinks: SocialLink[] = [
   { id: 'soc-1', platform: 'github', label: 'GitHub', url: 'https://github.com/Corder-s', is_active: true, display_order: 1 },
   { id: 'soc-2', platform: 'linkedin', label: 'LinkedIn', url: 'https://www.linkedin.com/in/shubham-saini-33537a374/', is_active: true, display_order: 2 },
-  { id: 'soc-3', platform: 'email', label: 'Email', url: 'mailto:damnitzshuham1406@gmail.com', is_active: true, display_order: 3 },
-  { id: 'soc-4', platform: 'whatsapp', label: 'WhatsApp', url: 'https://wa.me/919876543210', is_active: true, display_order: 4 },
-  { id: 'soc-5', platform: 'instagram', label: 'Instagram', url: 'https://instagram.com/shubham.saini', is_active: true, display_order: 5 },
-  { id: 'soc-6', platform: 'phone', label: 'Phone', url: 'tel:+919876543210', is_active: true, display_order: 6 },
+  { id: 'soc-3', platform: 'email', label: 'Email', url: 'mailto:damnitshuham1406@gmail.com', is_active: true, display_order: 3 },
+  { id: 'soc-4', platform: 'whatsapp', label: 'WhatsApp', url: 'https://wa.me/918958364005', is_active: true, display_order: 4 },
+  { id: 'soc-5', platform: 'instagram', label: 'Instagram', url: 'https://www.instagram.com/damn.itz_shubham/', is_active: true, display_order: 5 },
+  { id: 'soc-6', platform: 'phone', label: 'Phone', url: 'tel:+918958364005', is_active: true, display_order: 6 },
 ];
 
 export const initialContactMessages: ContactMessage[] = [
